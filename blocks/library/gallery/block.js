@@ -26,6 +26,7 @@ import MediaUpload from '../../media-upload';
 import ImagePlaceholder from '../../image-placeholder';
 import InspectorControls from '../../inspector-controls';
 import BlockControls from '../../block-controls';
+import BlockNotices from '../../block-notices';
 import BlockAlignmentToolbar from '../../block-alignment-toolbar';
 import GalleryImage from './gallery-image';
 
@@ -127,16 +128,17 @@ class GalleryBlock extends Component {
 
 	addFiles( files ) {
 		const currentImages = this.props.attributes.images || [];
-		const { setAttributes } = this.props;
-		mediaUpload(
-			files,
-			( images ) => {
+		const { notices, setAttributes } = this.props;
+		mediaUpload( {
+			allowedType: 'image',
+			filesList: files,
+			onFileChange: ( images ) => {
 				setAttributes( {
 					images: currentImages.concat( images ),
 				} );
 			},
-			'image',
-		);
+			onError: notices.createErrorNotice,
+		} );
 	}
 
 	componentWillReceiveProps( nextProps ) {
@@ -150,7 +152,7 @@ class GalleryBlock extends Component {
 	}
 
 	render() {
-		const { attributes, isSelected, className } = this.props;
+		const { attributes, className, isSelected, notices } = this.props;
 		const { images, columns = defaultColumnsNumber( attributes ), align, imageCrop, linkTo } = attributes;
 
 		const dropZone = (
@@ -189,6 +191,13 @@ class GalleryBlock extends Component {
 			)
 		);
 
+		const noticesUI = notices.noticeList.length > 0 &&
+			<BlockNotices
+				key="block-notices"
+				notices={ notices.noticeList }
+				onRemove={ notices.removeNotice }
+			/>;
+
 		if ( images.length === 0 ) {
 			return [
 				controls,
@@ -198,6 +207,8 @@ class GalleryBlock extends Component {
 					label={ __( 'Gallery' ) }
 					onSelectImage={ this.onSelectImages }
 					multiple
+					notices={ noticesUI }
+					onError={ notices.createErrorNotice }
 				/>,
 			];
 		}
@@ -228,6 +239,7 @@ class GalleryBlock extends Component {
 				</InspectorControls>
 			),
 			<ul key="gallery" className={ `${ className } align${ align } columns-${ columns } ${ imageCrop ? 'is-cropped' : '' }` }>
+				{ noticesUI }
 				{ dropZone }
 				{ images.map( ( img, index ) => (
 					<li className="blocks-gallery-item" key={ img.id || img.url }>

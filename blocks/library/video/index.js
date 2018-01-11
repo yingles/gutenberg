@@ -102,7 +102,11 @@ export const settings = {
 				return false;
 			};
 			const setVideo = ( [ audio ] ) => onSelectVideo( audio );
-			const uploadFromFiles = ( event ) => mediaUpload( event.target.files, setVideo, 'video' );
+			const uploadFromFiles = ( event ) => mediaUpload( {
+				filesList: event.target.files,
+				onFileChange: setVideo,
+				allowedType: 'video',
+			} );
 			const controls = isSelected && (
 				<BlockControls key="controls">
 					<BlockAlignmentToolbar

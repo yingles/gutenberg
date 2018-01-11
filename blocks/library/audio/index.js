@@ -93,7 +93,11 @@ export const settings = {
 				return false;
 			};
 			const setAudio = ( [ audio ] ) => onSelectAudio( audio );
-			const uploadFromFiles = ( event ) => mediaUpload( event.target.files, setAudio, 'audio' );
+			const uploadFromFiles = ( event ) => mediaUpload( {
+				filesList: event.target.files,
+				onFileChange: setAudio,
+				allowedType: 'audio',
+			} );
 
 			if ( editing ) {
 				return (

@@ -1,7 +1,12 @@
 /**
  * External Dependencies
  */
-import { compact, get, startsWith } from 'lodash';
+import { compact, get, noop, startsWith } from 'lodash';
+
+/**
+ * WordPress dependencies
+ */
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  *	Media Upload is used by audio, image, gallery and video blocks to handle uploading a media file
@@ -9,11 +14,20 @@ import { compact, get, startsWith } from 'lodash';
  *
  *	TODO: future enhancement to add an upload indicator.
  *
- * @param {Array}    filesList    List of files.
- * @param {Function} onFileChange Function to be called each time a file or a temporary representation of the file is available.
- * @param {string}   allowedType  The type of media that can be uploaded.
+ * @param   {Object}   $0                   Parameters object passed to the function.
+ * @param   {string}   $0.allowedType       The type of media that can be uploaded.
+ * @param   {Array}    $0.filesList         List of files.
+ * @param   {number}   $0.maxUploadFileSize Maximum upload size in bytes allowed for the site.
+ * @param   {Function} $0.onError           Function called when an error happens.
+ * @param   {Function} $0.onFileChange      Function called each time a file or a temporary representation of the file is available.
  */
-export function mediaUpload( filesList, onFileChange, allowedType ) {
+export function mediaUpload( {
+	allowedType,
+	filesList,
+	maxUploadFileSize = get( window, '_wpMediaSettings.maxUploadSize', 0 ),
+	onError = noop,
+	onFileChange,
+} ) {
 	// Cast filesList to array
 	const files = [ ...filesList ];
 
@@ -25,6 +39,17 @@ export function mediaUpload( filesList, onFileChange, allowedType ) {
 	const isAllowedType = ( fileType ) => startsWith( fileType, `${ allowedType }/` );
 	files.forEach( ( mediaFile, idx ) => {
 		if ( ! isAllowedType( mediaFile.type ) ) {
+			return;
+		}
+
+		// verify if file is greater than the maximum file upload size allowed for the site.
+		if ( maxUploadFileSize && mediaFile.size > maxUploadFileSize ) {
+			onError(
+				sprintf(
+					__( '%s exceeds the maximum upload size for this site.' ),
+					mediaFile.name
+				)
+			);
 			return;
 		}
 
@@ -48,8 +73,13 @@ export function mediaUpload( filesList, onFileChange, allowedType ) {
 			},
 			() => {
 				// Reset to empty on failure.
-				// TODO: Better failure messaging
 				setAndUpdateFiles( idx, null );
+				onError(
+					sprintf(
+						__( 'Error while uploading file %s to the media library.' ),
+						mediaFile.name
+					)
+				);
 			}
 		);
 	} );

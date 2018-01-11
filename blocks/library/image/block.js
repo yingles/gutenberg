@@ -34,6 +34,7 @@ import ImagePlaceholder from '../../image-placeholder';
 import MediaUpload from '../../media-upload';
 import InspectorControls from '../../inspector-controls';
 import BlockControls from '../../block-controls';
+import BlockNotices from '../../block-notices';
 import BlockAlignmentToolbar from '../../block-alignment-toolbar';
 import UrlInputButton from '../../url-input/button';
 import ImageSize from './image-size';
@@ -68,13 +69,13 @@ class ImageBlock extends Component {
 			getBlobByURL( url )
 				.then(
 					( file ) =>
-						mediaUpload(
-							[ file ],
-							( [ image ] ) => {
+						mediaUpload( {
+							filesList: [ file ],
+							onFileChange: ( [ image ] ) => {
 								setAttributes( { ...image } );
 							},
-							'image'
-						)
+							allowedType: 'image',
+						} )
 				);
 		}
 	}
@@ -97,6 +98,15 @@ class ImageBlock extends Component {
 	}
 
 	onSelectImage( media ) {
+		if ( ! media ) {
+			this.props.setAttributes( {
+				url: undefined,
+				alt: undefined,
+				id: undefined,
+				caption: undefined,
+			} );
+			return;
+		}
 		this.props.setAttributes( pick( media, [ 'alt', 'id', 'caption', 'url' ] ) );
 	}
 
@@ -140,12 +150,19 @@ class ImageBlock extends Component {
 	}
 
 	render() {
-		const { attributes, setAttributes, isSelected, className, settings, toggleSelection } = this.props;
+		const { attributes, setAttributes, isSelected, className, notices, settings, toggleSelection } = this.props;
 		const { url, alt, caption, align, id, href, width, height } = attributes;
 
 		const availableSizes = this.getAvailableSizes();
 		const figureStyle = width ? { width } : {};
 		const isResizable = [ 'wide', 'full' ].indexOf( align ) === -1 && ( ! viewPort.isExtraSmall() );
+
+		const noticesUI = notices.noticeList.length > 0 &&
+			<BlockNotices
+				key="block-notices"
+				notices={ notices.noticeList }
+				onRemove={ notices.removeNotice }
+			/>;
 
 		const controls = (
 			isSelected && (
@@ -183,6 +200,8 @@ class ImageBlock extends Component {
 					key="image-placeholder"
 					icon="format-image"
 					label={ __( 'Image' ) }
+					notices={ noticesUI }
+					onError={ notices.createErrorNotice }
 					onSelectImage={ this.onSelectImage }
 				/>,
 			];
@@ -216,6 +235,7 @@ class ImageBlock extends Component {
 					) }
 				</InspectorControls>
 			),
+			noticesUI,
 			<figure key="image" className={ classes } style={ figureStyle }>
 				<ImageSize src={ url } dirtynessTrigger={ align }>
 					{ ( sizes ) => {

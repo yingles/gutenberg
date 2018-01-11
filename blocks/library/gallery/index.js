@@ -132,11 +132,11 @@ export const settings = {
 				},
 				transform( files, onChange ) {
 					const block = createBlock( 'core/gallery' );
-					mediaUpload(
-						files,
-						( images ) => onChange( block.uid, { images } ),
-						'image'
-					);
+					mediaUpload( {
+						filesList: files,
+						onFileChange: ( images ) => onChange( block.uid, { images } ),
+						allowedType: 'image',
+					} );
 					return block;
 				},
 			},
