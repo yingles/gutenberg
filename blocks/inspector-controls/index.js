@@ -20,13 +20,20 @@ import {
 import { Component } from '@wordpress/element';
 import { deprecated } from '@wordpress/utils';
 
-export default function InspectorControls( { children } ) {
+/**
+ * Internal dependencies
+ */
+import { ifEditBlockSelected } from '../block-edit/context';
+
+export function InspectorControls( { children } ) {
 	return (
 		<Fill name="Inspector.Controls">
 			{ children }
 		</Fill>
 	);
 }
+
+export default ifEditBlockSelected( InspectorControls );
 
 const withDeprecation = ( componentName ) => ( OriginalComponent ) => {
 	class WrappedComponent extends Component {

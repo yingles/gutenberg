@@ -7,7 +7,12 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
-import { concatChildren, Component, RawHTML } from '@wordpress/element';
+import {
+	concatChildren,
+	Component,
+	Fragment,
+	RawHTML,
+} from '@wordpress/element';
 import {
 	Autocomplete,
 	PanelBody,
@@ -104,9 +109,9 @@ class ParagraphBlock extends Component {
 
 		const className = dropCap ? 'has-drop-cap' : null;
 
-		return [
-			isSelected && (
-				<BlockControls key="controls">
+		return (
+			<Fragment>
+				<BlockControls>
 					<AlignmentToolbar
 						value={ align }
 						onChange={ ( nextAlign ) => {
@@ -114,9 +119,7 @@ class ParagraphBlock extends Component {
 						} }
 					/>
 				</BlockControls>
-			),
-			isSelected && (
-				<InspectorControls key="inspector">
+				<InspectorControls>
 					<PanelBody title={ __( 'Text Settings' ) }>
 						<ToggleControl
 							label={ __( 'Drop Cap' ) }
@@ -158,54 +161,54 @@ class ParagraphBlock extends Component {
 						/>
 					</PanelBody>
 				</InspectorControls>
-			),
-			<div key="editable" ref={ this.bindRef }>
-				<Autocomplete completers={ [
-					blockAutocompleter( { onReplace } ),
-					userAutocompleter(),
-				] }>
-					{ ( { isExpanded, listBoxId, activeId } ) => (
-						<RichText
-							tagName="p"
-							className={ classnames( 'wp-block-paragraph', className, {
-								'has-background': backgroundColor,
-							} ) }
-							style={ {
-								backgroundColor: backgroundColor,
-								color: textColor,
-								fontSize: fontSize ? fontSize + 'px' : undefined,
-								textAlign: align,
-							} }
-							value={ content }
-							onChange={ ( nextContent ) => {
-								setAttributes( {
-									content: nextContent,
-								} );
-							} }
-							onSplit={ insertBlocksAfter ?
-								( before, after, ...blocks ) => {
-									setAttributes( { content: before } );
-									insertBlocksAfter( [
-										...blocks,
-										createBlock( 'core/paragraph', { content: after } ),
-									] );
-								} :
-								undefined
-							}
-							onMerge={ mergeBlocks }
-							onReplace={ this.onReplace }
-							onRemove={ () => onReplace( [] ) }
-							placeholder={ placeholder || __( 'Add text or type / to add content' ) }
-							aria-autocomplete="list"
-							aria-expanded={ isExpanded }
-							aria-owns={ listBoxId }
-							aria-activedescendant={ activeId }
-							isSelected={ isSelected }
-						/>
-					) }
-				</Autocomplete>
-			</div>,
-		];
+				<div ref={ this.bindRef }>
+					<Autocomplete completers={ [
+						blockAutocompleter( { onReplace } ),
+						userAutocompleter(),
+					] }>
+						{ ( { isExpanded, listBoxId, activeId } ) => (
+							<RichText
+								tagName="p"
+								className={ classnames( 'wp-block-paragraph', className, {
+									'has-background': backgroundColor,
+								} ) }
+								style={ {
+									backgroundColor: backgroundColor,
+									color: textColor,
+									fontSize: fontSize ? fontSize + 'px' : undefined,
+									textAlign: align,
+								} }
+								value={ content }
+								onChange={ ( nextContent ) => {
+									setAttributes( {
+										content: nextContent,
+									} );
+								} }
+								onSplit={ insertBlocksAfter ?
+									( before, after, ...blocks ) => {
+										setAttributes( { content: before } );
+										insertBlocksAfter( [
+											...blocks,
+											createBlock( 'core/paragraph', { content: after } ),
+										] );
+									} :
+									undefined
+								}
+								onMerge={ mergeBlocks }
+								onReplace={ this.onReplace }
+								onRemove={ () => onReplace( [] ) }
+								placeholder={ placeholder || __( 'Add text or type / to add content' ) }
+								aria-autocomplete="list"
+								aria-expanded={ isExpanded }
+								aria-owns={ listBoxId }
+								aria-activedescendant={ activeId }
+								isSelected={ isSelected }
+							/>
+						) }
+					</Autocomplete>
+				</div>
+			</Fragment>
+		);
 	}
 }
 
