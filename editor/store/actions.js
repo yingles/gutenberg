@@ -52,6 +52,23 @@ export function resetAutosave( autosaveData ) {
 }
 
 /**
+ * Returns an action object used in signaling that the latest version of the
+ * autosave has been received.
+ *
+ * @param {Object} autosaveData Post object
+ * @param {Array}  blocks Array of blocks.
+ * @param {Object} edits  Initial edited attributes object.
+ *
+ * @return {Object} Action object.
+ */
+export function setupEditorState( post, blocks, edits ) {
+	return {
+		type: 'SETUP_EDITOR_STATE',
+		post,
+	};
+}
+
+/**
  * Returns an action object used to update the autosave status message.
  *
  * @param  {Object} message Post object
@@ -75,7 +92,7 @@ export function updateAutosaveStatusMessage( message ) {
  */
 export function setupNewPost( edits ) {
 	return {
-		type: 'SETUP_NEW_POST',
+		blocks,
 		edits,
 	};
 }
@@ -286,10 +303,18 @@ export function trashPost( postId, postType ) {
 	};
 }
 
-export function mergeBlocks( blockA, blockB ) {
+/**
+ * Returns an action object used in signalling that two blocks should be merged
+ *
+ * @param {string} blockAUid UID of the first block to merge.
+ * @param {string} blockBUid UID of the second block to merge.
+ *
+ * @return {Object} Action object.
+ */
+export function mergeBlocks( blockAUid, blockBUid ) {
 	return {
 		type: 'MERGE_BLOCKS',
-		blocks: [ blockA, blockB ],
+		blocks: [ blockAUid, blockBUid ],
 	};
 }
 
@@ -371,6 +396,16 @@ export function redo() {
  */
 export function undo() {
 	return { type: 'UNDO' };
+}
+
+/**
+ * Returns an action object used in signalling that undo history record should
+ * be created.
+ *
+ * @return {Object} Action object.
+ */
+export function createUndoLevel() {
+	return { type: 'CREATE_UNDO_LEVEL' };
 }
 
 /**
@@ -504,7 +539,7 @@ export function initializeMetaBoxState( metaBoxes ) {
 /**
  * Returns an action object used to request meta box update.
  *
- * @return {Object} Action object.
+ * @return {Object}      Action object.
  */
 export function requestMetaBoxUpdates() {
 	return {

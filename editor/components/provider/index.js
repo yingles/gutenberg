@@ -19,7 +19,7 @@ import {
 /**
  * Internal Dependencies
  */
-import { setupEditor, undo, showAutosaveNotice, initializeMetaBoxState } from '../../store/actions';
+import { setupEditor, undo, redo, showAutosaveNotice, createUndoLevel, initializeMetaBoxState } from '../../store/actions';
 import store from '../../store';
 import { setupHeartbeat } from '../../utils/heartbeat';
 
@@ -114,10 +114,14 @@ class EditorProvider extends Component {
 			// RichText provider:
 			//
 			//  - context.onUndo
+			//  - context.onRedo
+			//  - context.onCreateUndoLevel
 			[
 				RichTextProvider,
 				bindActionCreators( {
 					onUndo: undo,
+					onRedo: redo,
+					onCreateUndoLevel: createUndoLevel,
 				}, this.store.dispatch ),
 			],
 
