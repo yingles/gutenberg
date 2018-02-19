@@ -84,7 +84,7 @@ export function setupHeartbeat() {
 		// Block autosaving for 10 seconds.
 		wp.autosave.server.tempBlockSave();
 
-		// Dispath an event to set the state isAutosaving to true..
+		// Dispatch an event to set the state isAutosaving to true..
 		dispatch( toggleAutosave( true ) );
 
 		// Trigger some legacy events.
