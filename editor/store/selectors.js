@@ -1016,16 +1016,6 @@ export function isAutosavingPost( state ) {
 }
 
 /**
- * Is the netowork connected?
- *
- * @param  {Object}  state Global application state
- * @return {boolean}       Whether the network is connected
- */
-export function isNetworkConnected( state ) {
-	return state.networkIsConnected;
-}
-
-/**
  * Returns a suggested post format for the current post, inferred only if there
  * is a single block within the post and it is of a type known to match a
  * default post format. Returns null if the format cannot be determined.

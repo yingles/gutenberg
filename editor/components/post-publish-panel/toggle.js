@@ -23,16 +23,12 @@ import {
 	isEditedPostBeingScheduled,
 	isAutosavingPost,
 	getCurrentPostType,
-	isNetworkConnected,
 } from '../../store/selectors';
 
-function PostPublishPanelToggle( { user, isSaving, isPublishable, isSaveable, isPublished, isBeingScheduled, onToggle, isOpen, isAutosaving, isConnected } ) {
-	const isButtonEnabled = isConnected &&
-		(
-			(
-				! isSaving && isPublishable && isSaveable
-			) || isPublished
-		);
+function PostPublishPanelToggle( { user, isSaving, isPublishable, isSaveable, isPublished, isBeingScheduled, onToggle, isOpen, isAutosaving } ) {
+	const isButtonEnabled = (
+		! isSaving && isPublishable && isSaveable
+	) || isPublished;
 
 	const userCanPublishPosts = get( user.data, [ 'post_type_capabilities', 'publish_posts' ], false );
 	const isContributor = user.data && ! userCanPublishPosts;
@@ -65,7 +61,6 @@ const applyConnect = connect(
 		isBeingScheduled: isEditedPostBeingScheduled( state ),
 		postType: getCurrentPostType( state ),
 		isAutosaving: isAutosavingPost( state ),
-		isConnected: isNetworkConnected( state ),
 	} ),
 );
 

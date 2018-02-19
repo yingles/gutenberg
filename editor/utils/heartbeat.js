@@ -9,8 +9,6 @@ import {
 import {
 	toggleAutosave,
 	removeNotice,
-	toggleNetworkIsConnected,
-	showDisconnectionNotice,
 	resetAutosave,
 	updateAutosaveStatusMessage,
 } from '../store/actions';
@@ -19,8 +17,6 @@ import {
  * WordPress dependencies
  */
 import { doAction } from '@wordpress/hooks';
-
-const DISCONNECTION_NOTICE_ID = 'DISCONNECTION_NOTICE_ID';
 
 /**
  * Set up the heartbeat functionality for Gutenberg.
@@ -99,8 +95,6 @@ export function setupHeartbeat() {
 	/**
 	 * Disable the default (classic editor) autosave connection event handlers.
 	 */
-	$document.off( 'heartbeat-connection-lost.autosave' );
-	$document.off( 'heartbeat-connection-restored.autosave' );
 	$document.off( 'heartbeat-send.autosave' );
 	$document.off( 'heartbeat-tick.autosave' );
 
@@ -128,26 +122,4 @@ export function setupHeartbeat() {
 		}
 	} );
 
-	/**
-	 * Disable buttons and throw a notice when the connection is lost.
-	 *
-	 * @return {void}
-	 */
-	$document.on( 'heartbeat-connection-lost.autosave', function( event, error, status ) {
-		// When connection is lost, keep user from submitting changes.
-		if ( 'timeout' === error || 603 === status ) {
-			dispatch( showDisconnectionNotice() );
-			dispatch( toggleNetworkIsConnected( false ) );
-		}
-	} );
-
-	/**
-	 * Enable buttons when the connection is restored.
-	 *
-	 * @return {void}
-	 */
-	$document.on( 'heartbeat-connection-restored.autosave', function() {
-		dispatch( removeNotice( DISCONNECTION_NOTICE_ID ) );
-		dispatch( toggleNetworkIsConnected( true ) );
-	} );
 }

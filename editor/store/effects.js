@@ -58,7 +58,6 @@ import {
 	hasMetaBoxes,
 	POST_UPDATE_TRANSACTION_ID,
 	isAutosavingPost,
-	isNetworkConnected,
 } from './selectors';
 import { getMetaBoxContainer } from '../utils/meta-boxes';
 
@@ -67,7 +66,6 @@ import { getMetaBoxContainer } from '../utils/meta-boxes';
  */
 const SAVE_POST_NOTICE_ID = 'SAVE_POST_NOTICE_ID';
 const AUTOSAVE_POST_NOTICE_ID = 'AUTOSAVE_POST_NOTICE_ID';
-const DISCONNECTION_NOTICE_ID = 'DISCONNECTION_NOTICE_ID';
 const TRASH_POST_NOTICE_ID = 'TRASH_POST_NOTICE_ID';
 const REUSABLE_BLOCK_NOTICE_ID = 'REUSABLE_BLOCK_NOTICE_ID';
 
@@ -155,7 +153,7 @@ export default {
 
 		// Update dirty meta boxes.
 		if ( hasMetaBoxes( store.getState() ) ) {
-		dispatch( requestMetaBoxUpdates() );
+			dispatch( requestMetaBoxUpdates() );
 		}
 
 		if ( get( window.history.state, 'id' ) !== post.id ) {
@@ -201,19 +199,6 @@ export default {
 				}
 			) );
 		}
-	},
-	REQUEST_CONNECTION_LOST( action, store ) {
-		const { dispatch } = store;
-		const noticeMessage = __( 'You have lost your connection with the server, and saving has been disabled. This message will vanish once you\'ve reconnected.' );
-		dispatch( createWarningNotice(
-			<p>
-				<span>{ noticeMessage }</span>
-			</p>,
-			{
-				id: DISCONNECTION_NOTICE_ID,
-				spokenMessage: noticeMessage,
-			}
-		) );
 	},
 	TRASH_POST( action, store ) {
 		const { dispatch, getState } = store;
@@ -309,8 +294,8 @@ export default {
 			return;
 		}
 
-		// Bail if we are currently autosaving, or the network is disconnected.
-		if ( isAutosavingPost( state ) || ! isNetworkConnected( state ) ) {
+		// Bail if we are currently autosaving.
+		if ( isAutosavingPost( state ) ) {
 			return;
 		}
 

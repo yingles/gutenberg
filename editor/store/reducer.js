@@ -628,23 +628,6 @@ export const autosave = withChangeDetection( function( state = { message: '', au
 }, { resetTypes: [ 'UPDATE_AUTOSAVE_STATUS_MESSAGE' ] } );
 
 /**
- * Reducer returning the currently network connection status.
- *
- * @param  {Object} state  Current state
- * @param  {Object} action Dispatched action
- * @return {Object}        Updated state
- */
-export function networkIsConnected( state = true, action ) {
-	switch ( action.type ) {
-		case 'TOGGLE_CONNECTED':
-			const { status } = action;
-			return status;
-	}
-
-	return state;
-}
-
-/**
  * Reducer returning the block insertion point.
  *
  * @param {Object} state  Current state.
@@ -953,6 +936,5 @@ export default optimist( combineReducers( {
 	isSavingMetaBoxes,
 	reusableBlocks,
 	currentlyAutosaving,
-	networkIsConnected,
 	autosave,
 } ) );

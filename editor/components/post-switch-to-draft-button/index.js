@@ -16,10 +16,9 @@ import { editPost, savePost } from '../../store/actions';
 import {
 	isSavingPost,
 	isCurrentPostPublished,
-	isNetworkConnected,
 } from '../../store/selectors';
 
-function PostSwitchToDraftButton( { className, isSaving, isPublished, onClick, isConnected } ) {
+function PostSwitchToDraftButton( { className, isSaving, isPublished, onClick } ) {
 	if ( ! isPublished ) {
 		return null;
 	}
@@ -36,7 +35,7 @@ function PostSwitchToDraftButton( { className, isSaving, isPublished, onClick, i
 			className={ className }
 			isLarge
 			onClick={ onSwitch }
-			disabled={ isSaving || ! isConnected }
+			disabled={ isSaving }
 		>
 			{ __( 'Switch to Draft' ) }
 		</Button>
@@ -47,7 +46,6 @@ const applyConnect = connect(
 	( state ) => ( {
 		isSaving: isSavingPost( state ),
 		isPublished: isCurrentPostPublished( state ),
-		isConnected: isNetworkConnected( state ),
 	} ),
 	{
 		onClick: () => [

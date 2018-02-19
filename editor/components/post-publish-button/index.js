@@ -25,7 +25,6 @@ import {
 	isEditedPostPublishable,
 	getCurrentPostType,
 	isAutosavingPost,
-	isNetworkConnected,
 } from '../../store/selectors';
 
 export function PostPublishButton( {
@@ -39,9 +38,8 @@ export function PostPublishButton( {
 	user,
 	onSubmit = noop,
 	isAutosaving,
-	isConnected,
 } ) {
-	const isButtonEnabled = user.data && ! isSaving && isPublishable && isSaveable && isConnected;
+	const isButtonEnabled = user.data && ! isSaving && isPublishable && isSaveable;
 	const isContributor = ! get( user.data, [ 'post_type_capabilities', 'publish_posts' ], false );
 
 	let publishStatus;
@@ -87,7 +85,6 @@ const applyConnect = connect(
 		isPublishable: isEditedPostPublishable( state ),
 		postType: getCurrentPostType( state ),
 		isAutosaving: isAutosavingPost( state ),
-		isConnected: isNetworkConnected( state ),
 	} ),
 	{
 		onStatusChange: ( status ) => editPost( { status } ),

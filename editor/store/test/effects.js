@@ -222,7 +222,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished = jest.spyOn( selectors, 'isCurrentPostPublished' );
 			selectors.isEditedPostNew = jest.spyOn( selectors, 'isEditedPostNew' );
 			selectors.isAutosavingPost = jest.spyOn( selectors, 'isAutosavingPost' );
-			selectors.isNetworkConnected = jest.spyOn( selectors, 'isNetworkConnected' );
 		} );
 
 		beforeEach( () => {
@@ -232,7 +231,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReset();
 			selectors.isEditedPostNew.mockReset();
 			selectors.isAutosavingPost.mockReset();
-			selectors.isNetworkConnected.mockReset();
 		} );
 
 		afterAll( () => {
@@ -241,7 +239,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockRestore();
 			selectors.isEditedPostNew.mockRestore();
 			selectors.isAutosavingPost.mockRestore();
-			selectors.isNetworkConnected.mockRestore();
 		} );
 
 		it( 'should do nothing for unsaveable', () => {
@@ -250,7 +247,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( true );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( true );
 
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
@@ -261,7 +257,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( true );
 
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
@@ -272,7 +267,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( true );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( true );
 
 			handler( {}, store );
 
@@ -286,20 +280,15 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
 			selectors.isAutosavingPost.mockReturnValue( true );
-			selectors.isNetworkConnected.mockReturnValue( true );
-
-			handler( {}, store );
-
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
 
-		it( 'should do nothing when network disconnected', () => {
+		it( 'should return update action for saveable, dirty draft', () => {
 			selectors.isEditedPostSaveable.mockReturnValue( true );
 			selectors.isEditedPostDirty.mockReturnValue( true );
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( false );
 
 			handler( {}, store );
 
@@ -312,7 +301,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( true );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( true );
 
 			handler( {}, store );
 
@@ -327,7 +315,6 @@ describe( 'effects', () => {
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
 			selectors.isAutosavingPost.mockReturnValue( false );
-			selectors.isNetworkConnected.mockReturnValue( true );
 
 			handler( {}, store );
 			expect( dispatch ).toHaveBeenCalledTimes( 1 );

@@ -355,29 +355,6 @@ export function showAutosaveNotice( autosaveStatus ) {
 	};
 }
 
-/**
- * Returns an action object used to toggle the connection status.
- *
- * @param  {boolean} status Is the network connection up?
- * @return {Object}      Action object
- */
-export function toggleNetworkIsConnected( status ) {
-	return {
-		type: 'TOGGLE_CONNECTED',
-		status,
-	};
-}
-
-/**
- * Returns an action to show the disconnection notice.
- *
- * @return {Object}              Action object
- */
-export function showDisconnectionNotice() {
-	return {
-		type: 'REQUEST_CONNECTION_LOST',
-	};
-}
 
 /**
  * Returns an action object used in signalling that undo history should
