@@ -67,14 +67,6 @@ describe( 'PostPublishButton', () => {
 
 			expect( wrapper.prop( 'disabled' ) ).toBe( false );
 		} );
-
-		it( 'should not be enabled is editor is offline', () => {
-			const wrapper = shallow(
-				<PostPublishButton user={ user } isPublishable isSaveable isConnected={ false } />
-			);
-
-			expect( wrapper.prop( 'disabled' ) ).toBe( true );
-		} );
 	} );
 
 	describe( 'publish status', () => {

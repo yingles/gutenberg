@@ -31,7 +31,6 @@ import {
 	convertBlockToStatic,
 	convertBlockToReusable,
 	selectBlock,
-	editPost,
 } from '../../store/actions';
 import reducer from '../reducer';
 import effects from '../effects';
@@ -292,8 +291,7 @@ describe( 'effects', () => {
 
 			handler( {}, store );
 
-			expect( dispatch ).toHaveBeenCalledTimes( 2 );
-			expect( dispatch ).toHaveBeenCalledWith( editPost( { status: 'draft' } ) );
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( dispatch ).toHaveBeenCalledWith( savePost() );
 		} );
 
