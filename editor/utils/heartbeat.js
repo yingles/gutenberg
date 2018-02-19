@@ -4,6 +4,11 @@
 import { doAction } from '@wordpress/hooks';
 
 /**
+ * External dependencies.
+ */
+import jQuery from 'jquery';
+
+/**
  * Internal dependencies
  */
 import store from '../store';
