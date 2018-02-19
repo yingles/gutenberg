@@ -68,7 +68,7 @@ export function getMetaBox( state, location ) {
  * Returns true if the post is using Meta Boxes
  *
  * @param  {Object} state Global application state
- * @return {boolean}     Whether there are metaboxes or not.
+ * @return {boolean}      Whether there are metaboxes or not.
  */
 export const hasMetaBoxes = createSelector(
 	( state ) => {
