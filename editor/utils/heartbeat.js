@@ -1,3 +1,11 @@
+/**
+ * WordPress dependencies
+ */
+import { doAction } from '@wordpress/hooks';
+
+/**
+ * Internal dependencies
+ */
 import store from '../store';
 import {
 	getEditedPostTitle,
@@ -11,11 +19,6 @@ import {
 	resetAutosave,
 	updateAutosaveStatusMessage,
 } from '../store/actions';
-
-/**
- * WordPress dependencies
- */
-import { doAction } from '@wordpress/hooks';
 
 /**
  * Set up the heartbeat functionality for Gutenberg.
