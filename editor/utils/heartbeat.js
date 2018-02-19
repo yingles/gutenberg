@@ -88,11 +88,7 @@ export function setupHeartbeat() {
 		dispatch( toggleAutosave( true ) );
 
 		// Trigger some legacy events.
-		$document.trigger( 'wpcountwords', [ toSend.content ] )
-			.trigger( 'before-autosave', [ toSend ] );
-
-		// Trigger a hook action.
-		doAction( 'editor.beforeAutosave', toSend );
+		$document.trigger( 'before-autosave', [ toSend ] );
 
 		toSend._wpnonce = jQuery( '#_wpnonce' ).val() || '';
 
