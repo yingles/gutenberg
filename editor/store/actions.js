@@ -37,25 +37,9 @@ export function resetPost( post ) {
 }
 
 /**
- * Returns an action object used in signaling that the latest version of the
- * autosave has been received.
+ * Returns an action object used to setup the editor state when first opening an editor.
  *
- * @param {Object} autosaveData Post object
- *
- * @return {Object} Action object.
- */
-export function resetAutosave( autosaveData ) {
-	return {
-		type: 'RESET_AUTOSAVE',
-		autosave: autosaveData,
-	};
-}
-
-/**
- * Returns an action object used in signaling that the latest version of the
- * autosave has been received.
- *
- * @param {Object} autosaveData Post object
+ * @param {Object} post   Post object.
  * @param {Array}  blocks Array of blocks.
  * @param {Object} edits  Initial edited attributes object.
  *
@@ -65,6 +49,23 @@ export function setupEditorState( post, blocks, edits ) {
 	return {
 		type: 'SETUP_EDITOR_STATE',
 		post,
+		blocks,
+		edits,
+	};
+}
+
+/**
+ * Returns an action object used in signaling that the latest version of the
+ * autosave has been received.
+ *
+ * @param {Object} autosaveData Post object.
+ *
+ * @return {Object} Action object.
+ */
+export function resetAutosave( autosaveData ) {
+	return {
+		type: 'RESET_AUTOSAVE',
+		autosave: autosaveData,
 	};
 }
 
@@ -92,7 +93,6 @@ export function updateAutosaveStatusMessage( message ) {
  */
 export function setupNewPost( edits ) {
 	return {
-		blocks,
 		edits,
 	};
 }
@@ -354,7 +354,6 @@ export function showAutosaveNotice( autosaveStatus ) {
 		autosaveStatus,
 	};
 }
-
 
 /**
  * Returns an action object used in signalling that undo history should

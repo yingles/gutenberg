@@ -31,7 +31,7 @@ import {
 	convertBlockToStatic,
 	convertBlockToReusable,
 	selectBlock,
-	resetAutosave,
+	editPost,
 } from '../../store/actions';
 import reducer from '../reducer';
 import effects from '../effects';
@@ -283,18 +283,6 @@ describe( 'effects', () => {
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
 
-		it( 'should return update action for saveable, dirty draft', () => {
-			selectors.isEditedPostSaveable.mockReturnValue( true );
-			selectors.isEditedPostDirty.mockReturnValue( true );
-			selectors.isCurrentPostPublished.mockReturnValue( false );
-			selectors.isEditedPostNew.mockReturnValue( false );
-			selectors.isAutosavingPost.mockReturnValue( false );
-
-			handler( {}, store );
-
-			expect( dispatch ).not.toHaveBeenCalled();
-		} );
-
 		it( 'should set auto-draft to draft before save', () => {
 			selectors.isEditedPostSaveable.mockReturnValue( true );
 			selectors.isEditedPostDirty.mockReturnValue( true );
@@ -504,20 +492,6 @@ describe( 'effects', () => {
 				status: 'auto-draft',
 			};
 
-			const autosave = {
-				autosave: {
-					content: {
-						raw: '',
-					},
-					id: 1,
-					status: 'auto-draft',
-					title: {
-						raw: 'A History of Pork',
-					},
-				},
-				type: 'RESET_AUTOSAVE',
-			};
-
 			const result = handler( { post, settings: {} } );
 
 			expect( result ).toEqual( setupEditorState( post, [], { title: 'A History of Pork', status: 'draft' } ) );
@@ -557,7 +531,7 @@ describe( 'effects', () => {
 					{
 						id: 'a9691cf9-ecaa-42bd-a9ca-49587e817647',
 						title: 'My cool block',
-						content: '<!-- wp:core/test-block { "name":"Big Bird" } /-->',
+						content: '<!-- wp:core/test-block {"name":"Big Bird"} /-->',
 					},
 				] );
 
@@ -596,7 +570,7 @@ describe( 'effects', () => {
 				const promise = Promise.resolve( {
 					id,
 					title: 'My cool block',
-					content: '<!-- wp:core/test-block { "name":"Big Bird" } /-->',
+					content: '<!-- wp:core/test-block {"name":"Big Bird"} /-->',
 				} );
 
 				set( global, 'wp.api.models.Blocks', class {

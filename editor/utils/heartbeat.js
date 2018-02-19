@@ -8,7 +8,6 @@ import {
 } from '../store/selectors';
 import {
 	toggleAutosave,
-	removeNotice,
 	resetAutosave,
 	updateAutosaveStatusMessage,
 } from '../store/actions';
@@ -121,5 +120,4 @@ export function setupHeartbeat() {
 			data.wp_autosave = autosaveData;
 		}
 	} );
-
 }

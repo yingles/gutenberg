@@ -38,7 +38,6 @@ import {
 	updateReusableBlock,
 	saveReusableBlock,
 	insertBlock,
-	resetAutosave,
 	setMetaBoxSavedData,
 	selectBlock,
 } from './actions';
