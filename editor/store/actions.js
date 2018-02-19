@@ -350,7 +350,7 @@ export function toggleAutosave( isAutosaving ) {
  */
 export function showAutosaveNotice( autosaveStatus ) {
 	return {
-		type: 'REQUEST_AUTOSAVE_EXISTS',
+		type: 'REQUEST_AUTOSAVE_NOTICE',
 		autosaveStatus,
 	};
 }

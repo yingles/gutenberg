@@ -181,7 +181,7 @@ export default {
 			__( 'Updating failed' );
 		dispatch( createErrorNotice( noticeMessage, { id: SAVE_POST_NOTICE_ID } ) );
 	},
-	REQUEST_AUTOSAVE_EXISTS( action, store ) {
+	REQUEST_AUTOSAVE_NOTICE( action, store ) {
 		const { autosaveStatus } = action;
 		const { dispatch } = store;
 		const noticeMessage = __( 'There is an autosave of this post that is more recent than the version below.' );
