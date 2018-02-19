@@ -20,7 +20,7 @@ function AutosaveMessage( { children } ) {
 	}
 	return (
 		<PanelRow>
-			<span>{ __( 'Autosave' ) }</span>
+			{ __( 'Autosave' ) }
 			<div>{ children }</div>
 		</PanelRow>
 	);
