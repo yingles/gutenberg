@@ -13,9 +13,7 @@ import jQuery from 'jquery';
  */
 import store from '../store';
 import {
-	getEditedPostTitle,
-	getEditedPostExcerpt,
-	getEditedPostContent,
+	getEditedPostAttribute,
 	getCurrentPostId,
 	isPostAutosaveDirty,
 } from '../store/selectors';
@@ -67,9 +65,9 @@ export function setupHeartbeat() {
 		const state = getState();
 
 		const toSend = {
-			post_title: getEditedPostTitle( state ),
-			post_excerpt: getEditedPostExcerpt( state ),
-			content: getEditedPostContent( state ),
+			post_title: getEditedPostAttribute( state, 'title' ),
+			post_excerpt: getEditedPostAttribute( state, 'excerpt' ),
+			content: getEditedPostAttribute( state, 'content' ),
 			post_id: getCurrentPostId( state ),
 		};
 
