@@ -48,17 +48,17 @@ export function setupHeartbeat() {
 	/**
 	 * Autosave 'save' function that pulls content from Gutenberg state. Based on `wp.autosave.save`.
 	 *
-	 * @return {Object|boolean} postData The autosaved post data to send, or false if no autosave is needed.
+	 * @return {Object|undefined} postData The autosaved post data to send. undefined if no autosave is required.
 	 */
 	const save = function() {
 		// Bail early if autosaving is suspended or saving is blocked.
 		if ( wp.autosave.isSuspended || wp.autosave._blockSave ) {
-			return false;
+			return;
 		}
 
 		// Check if its time for another autosave.
 		if ( ( new Date() ).getTime() < wp.autosave.nextRun ) {
-			return false;
+			return;
 		}
 
 		// Get the current editor state and compute the compare string (title::excerpt::content).
@@ -76,7 +76,7 @@ export function setupHeartbeat() {
 
 		// If the autosave is clean, no need to save.
 		if ( ! isPostAutosaveDirty( state ) ) {
-			return false;
+			return;
 		}
 
 		// Block autosaving for 10 seconds.
