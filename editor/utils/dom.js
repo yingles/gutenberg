@@ -366,3 +366,37 @@ export function getScrollContainer( node ) {
 	// Continue traversing
 	return getScrollContainer( node.parentNode );
 }
+
+/**
+ * Check wether the contents of the element have been fully selected.
+ * Returns true if there is no possibility of full selection.
+ *
+ * @param {Element} element The element to check.
+ *
+ * @return {boolean} True if fully selected, false if not.
+ */
+export function isFullySelected( element ) {
+	if ( includes( [ 'INPUT', 'TEXTAREA' ], element.nodeName ) ) {
+		return element.selectionStart === 0 && element.value.length === element.selectionEnd;
+	}
+
+	if ( ! element.isContentEditable ) {
+		return true;
+	}
+
+	const selection = window.getSelection();
+	const range = selection.rangeCount ? selection.getRangeAt( 0 ) : null;
+
+	if ( ! range ) {
+		return true;
+	}
+
+	const { startContainer, endContainer, startOffset, endOffset } = range;
+
+	return (
+		startContainer === element &&
+		endContainer === element &&
+		startOffset === 0 &&
+		endOffset === element.childNodes.length
+	);
+}

@@ -3,7 +3,7 @@
  */
 import { connect } from 'react-redux';
 import 'element-closest';
-import { find, last, reverse, get } from 'lodash';
+import { find, last, reverse, get, first } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -21,6 +21,7 @@ import {
 	isVerticalEdge,
 	placeCaretAtHorizontalEdge,
 	placeCaretAtVerticalEdge,
+	isFullySelected,
 } from '../../utils/dom';
 import {
 	getPreviousBlockUid,
@@ -28,6 +29,7 @@ import {
 	getMultiSelectedBlocksStartUid,
 	getMultiSelectedBlocks,
 	getSelectedBlock,
+	getBlockOrder,
 } from '../../store/selectors';
 import {
 	multiSelect,
@@ -38,7 +40,7 @@ import {
 /**
  * Module Constants
  */
-const { UP, DOWN, LEFT, RIGHT } = keycodes;
+const { UP, DOWN, LEFT, RIGHT, isMeta } = keycodes;
 
 function isElementNonEmpty( el ) {
 	return !! el.innerText.trim();
@@ -184,7 +186,7 @@ class WritingFlow extends Component {
 	}
 
 	onKeyDown( event ) {
-		const { selectedBlockUID, selectionStart, hasMultiSelection } = this.props;
+		const { selectedBlockUID, selectionStart, hasMultiSelection, onMultiSelect, blocks } = this.props;
 
 		const { keyCode, target } = event;
 		const isUp = keyCode === UP;
@@ -235,6 +237,25 @@ class WritingFlow extends Component {
 		) {
 			this.props.onBottomReached();
 		}
+
+		const activeElement = document.activeElement;
+
+		// Set right before the meta+a combination can be pressed.
+		if ( isMeta( event ) ) {
+			this.isFullySelected = isFullySelected( activeElement );
+		}
+
+		if ( isMeta( event, 'a' ) ) {
+			// In the case of contentEditable, we want to know the earlier value
+			// because the selection will have already been set by TinyMCE.
+			if ( activeElement.isContentEditable ? this.isFullySelected : isFullySelected( activeElement ) ) {
+				onMultiSelect( first( blocks ), last( blocks ) );
+				event.preventDefault();
+			}
+
+			// Set in case the meta key doesn't get released.
+			this.isFullySelected = isFullySelected( activeElement );
+		}
 	}
 
 	render() {
@@ -263,6 +284,7 @@ export default connect(
 		selectionStart: getMultiSelectedBlocksStartUid( state ),
 		hasMultiSelection: getMultiSelectedBlocks( state ).length > 1,
 		selectedBlockUID: get( getSelectedBlock( state ), [ 'uid' ] ),
+		blocks: getBlockOrder( state ),
 	} ),
 	{
 		onMultiSelect: multiSelect,
