@@ -41,9 +41,9 @@ describe( 'Multi-block selection', () => {
 		// Multiselect via keyboard
 		const isMacOs = Cypress.platform === 'darwin';
 		if ( isMacOs ) {
-			cy.get( 'body' ).type( '{meta}a' );
+			cy.get( lastBlockSelector ).type( '{meta}a' ).type( '{meta}a' );
 		} else {
-			cy.get( 'body' ).type( '{ctrl}a' );
+			cy.get( lastBlockSelector ).type( '{ctrl}a' ).type( '{ctrl}a' );
 		}
 
 		// Verify selection
