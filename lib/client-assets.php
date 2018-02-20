@@ -741,6 +741,42 @@ add_action( 'enqueue_block_assets', 'gutenberg_enqueue_registered_block_scripts_
 add_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_registered_block_scripts_and_styles' );
 
 /**
+ * Retrieve a stored autosave that is newer than the post save.
+ *
+ * Deletes autosaves that are older than the post save.
+ *
+ * @param  WP_Post  $post Post object.
+ * @return WP_Post|boolean  The post autosave. False if
+ */
+function get_autosave_newer_than_post_save( $post ) {
+	// Add autosave data if it is newer and changed.
+	$autosave      = wp_get_post_autosave( $post->ID );
+	$show_autosave = false;
+
+	// Check if we have an autosave that is newer than the post and different from the current post.
+	if (
+		$autosave &&
+		mysql2date( 'U', $autosave->post_modified_gmt, false ) > mysql2date( 'U', $post->post_modified_gmt, false )
+	) {
+		// Iterate thru revisioned fields checking for any changes.
+		foreach ( _wp_post_revision_fields( $post ) as $autosave_field => $_autosave_field ) {
+			if ( normalize_whitespace( $autosave->$autosave_field ) != normalize_whitespace( $post->$autosave_field ) ) {
+				$show_autosave = true;
+				break;
+			}
+		}
+	}
+
+	// If this autosave isn't newer and different from the current post, remove.
+	if ( $autosave && ! $show_autosave ) {
+		wp_delete_post_revision( $autosave->ID );
+		return false;
+	}
+
+	return $autosave;
+}
+
+/**
  * Scripts & Styles.
  *
  * Enqueues the needed scripts and styles when visiting the top-level page of
@@ -771,27 +807,7 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 		wp_die( $post_to_edit->get_error_message() );
 	}
 
-	// Add autosave data if it is newer and changed.
-	$autosave      = wp_get_post_autosave( $post->ID );
-	$show_autosave = false;
-
-	// Is the autosave newer than the post?
-	if (
-		$autosave &&
-		mysql2date( 'U', $autosave->post_modified_gmt, false ) > mysql2date( 'U', $post->post_modified_gmt, false )
-	) {
-		foreach ( _wp_post_revision_fields( $post ) as $autosave_field => $_autosave_field ) {
-			if ( normalize_whitespace( $autosave->$autosave_field ) != normalize_whitespace( $post->$autosave_field ) ) {
-				$show_autosave = true;
-				break;
-			}
-		}
-	}
-
-	// If this autosave isn't newer and different from the current post, remove.
-	if ( $autosave && ! $show_autosave ) {
-		wp_delete_post_revision( $autosave->ID );
-	}
+	$show_autosave = get_autosave_newer_than_post_save( $post );
 
 	if ( $show_autosave ) {
 		wp_localize_script(
