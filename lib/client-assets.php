@@ -798,7 +798,6 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 			'wp-editor',
 			'_wpAutosave',
 			array(
-				'id'        => $autosave->ID,
 				'edit_link' => add_query_arg( 'gutenberg', true, get_edit_post_link( $autosave->ID ) ),
 			)
 		);
