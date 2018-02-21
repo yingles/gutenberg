@@ -1,9 +1,4 @@
 /**
- * WordPress dependencies
- */
-import { doAction } from '@wordpress/hooks';
-
-/**
  * External dependencies.
  */
 import jQuery from 'jquery';
