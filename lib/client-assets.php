@@ -745,8 +745,8 @@ add_action( 'enqueue_block_editor_assets', 'gutenberg_enqueue_registered_block_s
  *
  * Deletes autosaves that are older than the post save.
  *
- * @param  WP_Post  $post Post object.
- * @return WP_Post|boolean  The post autosave. False if
+ * @param  WP_Post $post Post object.
+ * @return WP_Post|boolean The post autosave. False if none found.
  */
 function get_autosave_newer_than_post_save( $post ) {
 	// Add autosave data if it is newer and changed.
