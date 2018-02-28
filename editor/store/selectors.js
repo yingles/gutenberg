@@ -9,6 +9,7 @@ import {
 	has,
 	last,
 	reduce,
+	size,
 	compact,
 	find,
 	unionWith,
@@ -435,6 +436,22 @@ export const getBlocks = createSelector(
 	},
 	( state ) => [
 		state.editor.present.blockOrder,
+		state.editor.present.blocksByUid,
+	]
+);
+
+export const getGlobalBlockCount = createSelector(
+	( state, blockName ) => {
+		if ( ! blockName ) {
+			return size( state.editor.present.blocksByUid );
+		}
+		return reduce(
+			state.editor.present.blocksByUid,
+			( count, block ) => block.name === blockName ? count + 1 : count,
+			0
+		);
+	},
+	( state ) => [
 		state.editor.present.blocksByUid,
 	]
 );

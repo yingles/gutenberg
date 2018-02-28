@@ -2,7 +2,7 @@
  * External dependencies
  */
 import { connect } from 'react-redux';
-import { filter, countBy } from 'lodash';
+import { countBy, flatMap } from 'lodash';
 
 /**
  * WordPress dependencies
@@ -57,10 +57,24 @@ const getHeadingLevel = heading => {
 	}
 };
 
+const computeOutlineHeadings = ( blocks = [], path = [] ) => {
+	return flatMap( blocks, ( block = {} ) => {
+		if ( block.name === 'core/heading' ) {
+			return {
+				...block,
+				path,
+				level: getHeadingLevel( block ),
+				isEmpty: isEmptyHeading( block ),
+			};
+		}
+		return computeOutlineHeadings( block.innerBlocks, [ ...path, block ] );
+	} );
+};
+
 const isEmptyHeading = heading => ! heading.attributes.content || heading.attributes.content.length === 0;
 
 export const DocumentOutline = ( { blocks = [], title, onSelect } ) => {
-	const headings = filter( blocks, ( block ) => block.name === 'core/heading' );
+	const headings = computeOutlineHeadings( blocks );
 
 	if ( headings.length < 1 ) {
 		return null;
@@ -79,12 +93,7 @@ export const DocumentOutline = ( { blocks = [], title, onSelect } ) => {
 		}
 	};
 
-	const items = headings.map( ( heading ) => ( {
-		...heading,
-		level: getHeadingLevel( heading ),
-		isEmpty: isEmptyHeading( heading ),
-	} ) );
-	const countByLevel = countBy( items, 'level' );
+	const countByLevel = countBy( headings, 'level' );
 	const hasMultipleH1 = countByLevel[ 1 ] > 1;
 
 	return (
@@ -99,7 +108,7 @@ export const DocumentOutline = ( { blocks = [], title, onSelect } ) => {
 						{ title }
 					</DocumentOutlineItem>
 				) }
-				{ items.map( ( item, index ) => {
+				{ headings.map( ( item, index ) => {
 					// Headings remain the same, go up by one, or down by any amount.
 					// Otherwise there are missing levels.
 					const isIncorrectLevel = item.level > prevHeadingLevel + 1;
@@ -118,6 +127,7 @@ export const DocumentOutline = ( { blocks = [], title, onSelect } ) => {
 							level={ `H${ item.level }` }
 							isValid={ isValid }
 							onClick={ () => onSelectHeading( item.uid ) }
+							path={ item.path }
 						>
 							{ item.isEmpty ? emptyHeadingContent : item.attributes.content }
 							{ isIncorrectLevel && incorrectLevelContent }

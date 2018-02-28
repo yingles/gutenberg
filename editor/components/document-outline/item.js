@@ -7,12 +7,14 @@ import classnames from 'classnames';
  * WordPress dependencies
  */
 import { __ } from '@wordpress/i18n';
+import { getBlockType } from '@wordpress/blocks';
 
 const TableOfContentsItem = ( {
 	children,
 	isValid,
 	level,
 	onClick,
+	path = [],
 } ) => (
 	<li
 		className={ classnames(
@@ -28,6 +30,11 @@ const TableOfContentsItem = ( {
 			onClick={ onClick }
 		>
 			<span className="document-outline__emdash" aria-hidden="true"></span>
+			{ path.map( ( { name }, index ) => (
+				<strong key={ index } className="document-outline__level">
+					{ getBlockType( name ).title }
+				</strong>
+			) ) }
 			<strong className="document-outline__level">
 				{ level }
 			</strong>
