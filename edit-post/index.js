@@ -19,6 +19,7 @@ import './assets/stylesheets/main.scss';
 import './hooks';
 import Layout from './components/layout';
 import store from './store';
+import { initializeMetaBoxState } from './store/actions';
 
 export * from './api';
 
@@ -37,6 +38,16 @@ if ( dateSettings.timezone.string ) {
 	moment.tz.add( unpackedTimezone );
 	moment.tz.setDefault( 'WP' );
 }
+
+/**
+ * Configure heartbeat to refresh the wp-api nonce, keeping the editor
+ * authorization intact.
+ */
+window.jQuery( document ).on( 'heartbeat-tick', ( event, response ) => {
+	if ( response[ 'rest-nonce' ] ) {
+		window.wpApiSettings.nonce = response[ 'rest-nonce' ];
+	}
+} );
 
 /**
  * Reinitializes the editor after the user chooses to reboot the editor after
@@ -82,7 +93,7 @@ export function initializeEditor( id, post, settings, autosave ) {
 	const reboot = reinitializeEditor.bind( null, target, settings );
 	const ReduxProvider = createProvider( 'edit-post' );
 
-	const provider = render(
+	render(
 		<EditorProvider settings={ settings } post={ post } autosave={ autosave }>
 			<ErrorBoundary onError={ reboot }>
 				<ReduxProvider store={ store }>
@@ -94,6 +105,8 @@ export function initializeEditor( id, post, settings, autosave ) {
 	);
 
 	return {
-		initializeMetaBoxes: provider.initializeMetaBoxes,
+		initializeMetaBoxes( metaBoxes ) {
+			store.dispatch( initializeMetaBoxState( metaBoxes ) );
+		},
 	};
 }

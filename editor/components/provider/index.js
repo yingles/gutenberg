@@ -19,7 +19,7 @@ import {
 /**
  * Internal Dependencies
  */
-import { setupEditor, undo, redo, showAutosaveNotice, createUndoLevel, initializeMetaBoxState } from '../../store/actions';
+import { setupEditor, undo, redo, showAutosaveNotice, createUndoLevel } from '../../store/actions';
 import store from '../../store';
 import { setupHeartbeat } from '../../utils/heartbeat';
 
@@ -60,7 +60,6 @@ class EditorProvider extends Component {
 		super( ...arguments );
 
 		this.store = store;
-		this.initializeMetaBoxes = this.initializeMetaBoxes.bind( this );
 
 		this.settings = {
 			...DEFAULT_SETTINGS,
@@ -93,11 +92,7 @@ class EditorProvider extends Component {
 		) {
 			// eslint-disable-next-line no-console
 			console.error( 'The Editor Provider Props are immutable.' );
-		}
 	}
-
-	initializeMetaBoxes( metaBoxes ) {
-		this.store.dispatch( initializeMetaBoxState( metaBoxes ) );
 	}
 
 	render() {

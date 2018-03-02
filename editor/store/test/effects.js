@@ -23,7 +23,6 @@ import {
 	mergeBlocks,
 	replaceBlocks,
 	savePost,
-	requestMetaBoxUpdates,
 	updateReusableBlock,
 	saveReusableBlock,
 	deleteReusableBlock,
@@ -342,32 +341,16 @@ describe( 'effects', () => {
 			replaceStateSpy.mockRestore();
 		} );
 
-		it( 'should dispatch meta box updates on success for dirty meta boxes', () => {
-			const dispatch = jest.fn();
-			const store = { getState: () => ( {
-				metaBoxes: { side: { isActive: true } },
-			} ), dispatch };
-
-			const post = getDraftPost();
-
-			handler( { post: post, previousPost: post }, store );
-
-			expect( dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( dispatch ).toHaveBeenCalledWith( requestMetaBoxUpdates( post ) );
-		} );
-
 		it( 'should dispatch notices when publishing or scheduling a post', () => {
 			const dispatch = jest.fn();
-			const store = { getState: () => ( {
-				metaBoxes: { side: { isActive: true } },
-			} ), dispatch };
+			const store = { dispatch };
 
 			const previousPost = getDraftPost();
 			const post = getPublishedPost();
 
 			handler( { post, previousPost }, store );
 
-			expect( dispatch ).toHaveBeenCalledTimes( 2 );
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( dispatch ).toHaveBeenCalledWith( expect.objectContaining( {
 				notice: {
 					content: <p><span>Post published!</span> <a>View post</a></p>, // eslint-disable-line jsx-a11y/anchor-is-valid
@@ -382,16 +365,14 @@ describe( 'effects', () => {
 
 		it( 'should dispatch notices when reverting a published post to a draft', () => {
 			const dispatch = jest.fn();
-			const store = { getState: () => ( {
-				metaBoxes: { side: { isActive: true } },
-			} ), dispatch };
+			const store = { dispatch };
 
 			const previousPost = getPublishedPost();
 			const post = getDraftPost();
 
 			handler( { post, previousPost }, store );
 
-			expect( dispatch ).toHaveBeenCalledTimes( 2 );
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( dispatch ).toHaveBeenCalledWith( expect.objectContaining( {
 				notice: {
 					content: <p>
@@ -410,16 +391,14 @@ describe( 'effects', () => {
 
 		it( 'should dispatch notices when just updating a published post again', () => {
 			const dispatch = jest.fn();
-			const store = { getState: () => ( {
-				metaBoxes: { side: { isActive: true } },
-			} ), dispatch };
+			const store = { dispatch };
 
 			const previousPost = getPublishedPost();
 			const post = getPublishedPost();
 
 			handler( { post, previousPost }, store );
 
-			expect( dispatch ).toHaveBeenCalledTimes( 2 );
+			expect( dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( dispatch ).toHaveBeenCalledWith( expect.objectContaining( {
 				notice: {
 					content: <p><span>Post updated!</span>{ ' ' }<a>{ 'View post' }</a></p>, // eslint-disable-line jsx-a11y/anchor-is-valid
@@ -533,10 +512,9 @@ describe( 'effects', () => {
 					},
 				] );
 
-				set( global, 'wp.api.collections.Blocks', class {
-					fetch() {
-						return promise;
-					}
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => {
+					return promise;
 				} );
 
 				const dispatch = jest.fn();
@@ -564,29 +542,19 @@ describe( 'effects', () => {
 			it( 'should fetch a single reusable block', () => {
 				const id = 123;
 
-				let modelAttributes;
 				const promise = Promise.resolve( {
 					id,
 					title: 'My cool block',
 					content: '<!-- wp:core/test-block {"name":"Big Bird"} /-->',
 				} );
-
-				set( global, 'wp.api.models.Blocks', class {
-					constructor( attributes ) {
-						modelAttributes = attributes;
-					}
-
-					fetch() {
-						return promise;
-					}
-				} );
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => promise );
 
 				const dispatch = jest.fn();
 				const store = { getState: () => {}, dispatch };
 
 				handler( fetchReusableBlocks( id ), store );
 
-				expect( modelAttributes ).toEqual( { id } );
 				return promise.then( () => {
 					expect( dispatch ).toHaveBeenCalledWith( {
 						type: 'FETCH_REUSABLE_BLOCKS_SUCCESS',
@@ -607,12 +575,8 @@ describe( 'effects', () => {
 
 			it( 'should handle an API error', () => {
 				const promise = Promise.reject( {} );
-
-				set( global, 'wp.api.collections.Blocks', class {
-					fetch() {
-						return promise;
-					}
-				} );
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => promise );
 
 				const dispatch = jest.fn();
 				const store = { getState: () => {}, dispatch };
@@ -637,15 +601,10 @@ describe( 'effects', () => {
 			it( 'should save a reusable block and swaps its id', () => {
 				let modelAttributes;
 				const promise = Promise.resolve( { id: 3 } );
-
-				set( global, 'wp.api.models.Blocks', class {
-					constructor( attributes ) {
-						modelAttributes = attributes;
-					}
-
-					save() {
-						return promise;
-					}
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', ( request ) => {
+					modelAttributes = request.data;
+					return promise;
 				} );
 
 				const reusableBlock = createReusableBlock( 'core/test-block', {
@@ -676,12 +635,8 @@ describe( 'effects', () => {
 
 			it( 'should handle an API error', () => {
 				const promise = Promise.reject( {} );
-
-				set( global, 'wp.api.models.Blocks', class {
-					save() {
-						return promise;
-					}
-				} );
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => promise );
 
 				const reusableBlock = createReusableBlock( 'core/test-block', {
 					name: 'Big Bird',
@@ -709,18 +664,9 @@ describe( 'effects', () => {
 			const handler = effects.DELETE_REUSABLE_BLOCK;
 
 			it( 'should delete a reusable block', () => {
-				let modelAttributes;
 				const promise = Promise.resolve( {} );
-
-				set( global, 'wp.api.models.Blocks', class {
-					constructor( attributes ) {
-						modelAttributes = attributes;
-					}
-
-					destroy() {
-						return promise;
-					}
-				} );
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => promise );
 
 				const id = 123;
 
@@ -745,7 +691,6 @@ describe( 'effects', () => {
 					associatedBlockUids: [ associatedBlock.uid ],
 					optimist: expect.any( Object ),
 				} );
-				expect( modelAttributes ).toEqual( { id } );
 				return promise.then( () => {
 					expect( dispatch ).toHaveBeenCalledWith( {
 						type: 'DELETE_REUSABLE_BLOCK_SUCCESS',
@@ -757,12 +702,8 @@ describe( 'effects', () => {
 
 			it( 'should handle an API error', () => {
 				const promise = Promise.reject( {} );
-
-				set( global, 'wp.api.models.Blocks', class {
-					destroy() {
-						return promise;
-					}
-				} );
+				set( global, 'wp.api.getPostTypeRoute', () => 'blocks' );
+				set( global, 'wp.apiRequest', () => promise );
 
 				const state = reducer( undefined, updateReusableBlock( 123, {} ) );
 
