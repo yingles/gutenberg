@@ -24,7 +24,7 @@ import AutosaveMessage from '../autosave-message';
 import {
 	isEditorSidebarPanelOpened,
 } from '../../../store/selectors';
-import { toggleSidebarPanel } from '../../../store/actions';
+import { toggleGeneralSidebarEditorPanel } from '../../../store/actions';
 
 /**
  * Module Constants
@@ -52,7 +52,7 @@ export default connect(
 	} ),
 	{
 		onTogglePanel() {
-			return toggleSidebarPanel( PANEL_NAME );
+			return toggleGeneralSidebarEditorPanel( PANEL_NAME );
 		},
 	},
 	undefined,
