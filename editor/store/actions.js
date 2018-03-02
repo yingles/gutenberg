@@ -55,21 +55,6 @@ export function setupEditorState( post, blocks, edits ) {
 }
 
 /**
- * Returns an action object used in signaling that the latest version of the
- * autosave has been received.
- *
- * @param {Object} autosaveData Post object.
- *
- * @return {Object} Action object.
- */
-export function resetAutosave( autosaveData ) {
-	return {
-		type: 'RESET_AUTOSAVE',
-		autosave: autosaveData,
-	};
-}
-
-/**
  * Returns an action object used to update the autosave status message.
  *
  * @param  {Object} message Post object
@@ -80,20 +65,6 @@ export function updateAutosaveStatusMessage( message ) {
 	return {
 		type: 'UPDATE_AUTOSAVE_STATUS_MESSAGE',
 		message,
-	};
-}
-
-/**
- * Returns an action object used in signalling that editor has initialized as a
- * new post with specified edits which should be considered non-dirtying.
- *
- * @param {Object} edits Edited attributes object.
- *
- * @return {Object} Action object.
- */
-export function setupNewPost( edits ) {
-	return {
-		edits,
 	};
 }
 
@@ -326,19 +297,6 @@ export function mergeBlocks( blockAUid, blockBUid ) {
 export function autosave() {
 	return {
 		type: 'AUTOSAVE',
-	};
-}
-
-/**
- * Returns an action object used to toggle the autosave action status.
- *
- * @param  {boolean} isAutosaving Is the editor autosaving?
- * @return {Object}            Action object
- */
-export function toggleAutosave( isAutosaving ) {
-	return {
-		type: 'DOING_AUTOSAVE',
-		isAutosaving,
 	};
 }
 

@@ -53,7 +53,6 @@ import {
 	getBlocks,
 	getReusableBlock,
 	POST_UPDATE_TRANSACTION_ID,
-	isAutosavingPost,
 } from './selectors';
 
 /**
@@ -82,7 +81,7 @@ export default {
 			optimist: { type: BEGIN, id: POST_UPDATE_TRANSACTION_ID },
 		} );
 		dispatch( removeNotice( SAVE_POST_NOTICE_ID ) );
-dispatch( removeNotice( AUTOSAVE_POST_NOTICE_ID ) );
+		dispatch( removeNotice( AUTOSAVE_POST_NOTICE_ID ) );
 		const basePath = wp.api.getPostTypeRoute( getCurrentPostType( state ) );
 		wp.apiRequest( { path: `/wp/v2/${ basePath }/${ post.id }`, method: 'PUT', data: toSend } ).done( ( newPost ) => {
 			dispatch( resetPost( newPost ) );
@@ -284,13 +283,12 @@ dispatch( removeNotice( AUTOSAVE_POST_NOTICE_ID ) );
 			return;
 		}
 
-		// Bail if we are currently autosaving.
-		if ( isAutosavingPost( state ) ) {
-			return;
-		}
-
-		// Published post autosaving is handled by heartbeat.
 		if ( isCurrentPostPublished( state ) ) {
+			// TODO: Publish autosave.
+			//  - Autosaves are created as revisions for published posts, but
+			//    the necessary REST API behavior does not yet exist
+			//  - May need to check for whether the status of the edited post
+			//    has changed from the saved copy (i.e. published -> pending)
 			return;
 		}
 
@@ -501,6 +499,6 @@ dispatch( removeNotice( AUTOSAVE_POST_NOTICE_ID ) );
 		const blockName = getDefaultBlockForPostFormat( format );
 		if ( blockName && getBlockCount( getState() ) === 0 ) {
 			return insertBlock( createBlock( blockName ) );
-			}
+		}
 	},
 };

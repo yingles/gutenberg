@@ -219,7 +219,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty = jest.spyOn( selectors, 'isEditedPostDirty' );
 			selectors.isCurrentPostPublished = jest.spyOn( selectors, 'isCurrentPostPublished' );
 			selectors.isEditedPostNew = jest.spyOn( selectors, 'isEditedPostNew' );
-			selectors.isAutosavingPost = jest.spyOn( selectors, 'isAutosavingPost' );
 		} );
 
 		beforeEach( () => {
@@ -228,7 +227,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockReset();
 			selectors.isCurrentPostPublished.mockReset();
 			selectors.isEditedPostNew.mockReset();
-			selectors.isAutosavingPost.mockReset();
 		} );
 
 		afterAll( () => {
@@ -236,7 +234,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockRestore();
 			selectors.isCurrentPostPublished.mockRestore();
 			selectors.isEditedPostNew.mockRestore();
-			selectors.isAutosavingPost.mockRestore();
 		} );
 
 		it( 'should do nothing for unsaveable', () => {
@@ -244,7 +241,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockReturnValue( true );
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( true );
-			selectors.isAutosavingPost.mockReturnValue( false );
 
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
@@ -254,7 +250,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockReturnValue( false );
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
-			selectors.isAutosavingPost.mockReturnValue( false );
 
 			expect( dispatch ).not.toHaveBeenCalled();
 		} );
@@ -264,7 +259,6 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockReturnValue( false );
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( true );
-			selectors.isAutosavingPost.mockReturnValue( false );
 
 			handler( {}, store );
 
@@ -272,26 +266,14 @@ describe( 'effects', () => {
 			expect( dispatch ).toHaveBeenCalledWith( savePost() );
 		} );
 
-		it( 'should do nothing when autosaving', () => {
+		it( 'should return autosave action for saveable, dirty, published post', () => {
 			selectors.isEditedPostSaveable.mockReturnValue( true );
 			selectors.isEditedPostDirty.mockReturnValue( true );
-			selectors.isCurrentPostPublished.mockReturnValue( false );
-			selectors.isEditedPostNew.mockReturnValue( false );
-			selectors.isAutosavingPost.mockReturnValue( true );
-			expect( dispatch ).not.toHaveBeenCalled();
-		} );
-
-		it( 'should set auto-draft to draft before save', () => {
-			selectors.isEditedPostSaveable.mockReturnValue( true );
-			selectors.isEditedPostDirty.mockReturnValue( true );
-			selectors.isCurrentPostPublished.mockReturnValue( false );
+			selectors.isCurrentPostPublished.mockReturnValue( true );
 			selectors.isEditedPostNew.mockReturnValue( true );
-			selectors.isAutosavingPost.mockReturnValue( false );
 
-			handler( {}, store );
-
-			expect( dispatch ).toHaveBeenCalledTimes( 1 );
-			expect( dispatch ).toHaveBeenCalledWith( savePost() );
+			// TODO: Publish autosave
+			expect( dispatch ).not.toHaveBeenCalled();
 		} );
 
 		it( 'should return update action for saveable, dirty draft', () => {
@@ -299,9 +281,9 @@ describe( 'effects', () => {
 			selectors.isEditedPostDirty.mockReturnValue( true );
 			selectors.isCurrentPostPublished.mockReturnValue( false );
 			selectors.isEditedPostNew.mockReturnValue( false );
-			selectors.isAutosavingPost.mockReturnValue( false );
 
 			handler( {}, store );
+
 			expect( dispatch ).toHaveBeenCalledTimes( 1 );
 			expect( dispatch ).toHaveBeenCalledWith( savePost() );
 		} );

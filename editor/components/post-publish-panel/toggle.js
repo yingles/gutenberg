@@ -21,11 +21,10 @@ import {
 	isEditedPostPublishable,
 	isCurrentPostPublished,
 	isEditedPostBeingScheduled,
-	isAutosavingPost,
 	getCurrentPostType,
 } from '../../store/selectors';
 
-function PostPublishPanelToggle( { user, isSaving, isPublishable, isSaveable, isPublished, isBeingScheduled, onToggle, isOpen, isAutosaving } ) {
+function PostPublishPanelToggle( { user, isSaving, isPublishable, isSaveable, isPublished, isBeingScheduled, onToggle, isOpen } ) {
 	const isButtonEnabled = (
 		! isSaving && isPublishable && isSaveable
 	) || isPublished;
@@ -45,7 +44,7 @@ function PostPublishPanelToggle( { user, isSaving, isPublishable, isSaveable, is
 			onClick={ onToggle }
 			aria-expanded={ isOpen }
 			disabled={ ! isButtonEnabled }
-			isBusy={ ( isSaving && isPublished ) || isAutosaving }
+			isBusy={ isSaving && isPublished }
 		>
 			{ __( 'Publish...' ) }
 		</Button>
@@ -60,7 +59,6 @@ const applyConnect = connect(
 		isPublished: isCurrentPostPublished( state ),
 		isBeingScheduled: isEditedPostBeingScheduled( state ),
 		postType: getCurrentPostType( state ),
-		isAutosaving: isAutosavingPost( state ),
 	} ),
 );
 

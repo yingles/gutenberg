@@ -613,37 +613,15 @@ export function blocksMode( state = {}, action ) {
 }
 
 /**
- * Reducer returning the block insertion point visibility, a boolean value
- * reflecting whether the insertion point should be shown.
+ * Reducer returning the currently autosave message.
  *
- * @param  {Object} state  Current state
- * @param  {Object} action Dispatched action
- * @return {Object}        Updated state
- */
-export function currentlyAutosaving( state = false, action ) {
-	switch ( action.type ) {
-		case 'DOING_AUTOSAVE':
-			const { isAutosaving } = action;
-			return isAutosaving;
-	}
-
-	return state;
-}
-
-/**
- * Reducer returning the currently autosaving status.
+ * @param  {Object} state  Current state.
+ * @param  {Object} action Dispatched action.
  *
- * @param  {Object} state  Current state
- * @param  {Object} action Dispatched action
- * @return {Object}        Updated state
+ * @return {Object}        Updated state.
  */
-export const autosave = withChangeDetection( function( state = { message: '', autosave: false }, action ) {
+export function autosave( state = { message: '' }, action ) {
 	switch ( action.type ) {
-		case 'RESET_AUTOSAVE':
-			return {
-				...state,
-				autosave: action.autosave,
-			};
 		case 'UPDATE_AUTOSAVE_STATUS_MESSAGE':
 			return {
 				...state,
@@ -652,10 +630,11 @@ export const autosave = withChangeDetection( function( state = { message: '', au
 	}
 
 	return state;
-}, { resetTypes: [ 'UPDATE_AUTOSAVE_STATUS_MESSAGE' ] } );
+}
 
 /**
- * Reducer returning the block insertion point.
+ * Reducer returning the block insertion point visibility, a boolean value
+ * reflecting whether the insertion point should be shown.
  *
  * @param {Object} state  Current state.
  * @param {Object} action Dispatched action.
@@ -892,6 +871,5 @@ export default optimist( combineReducers( {
 	saving,
 	notices,
 	reusableBlocks,
-	currentlyAutosaving,
 	autosave,
 } ) );
