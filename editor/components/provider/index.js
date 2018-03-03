@@ -71,8 +71,8 @@ class EditorProvider extends Component {
 		}
 
 		// Display a notice if an autosave exists.
-		if ( props.autosave ) {
-			this.store.dispatch( showAutosaveNotice( props.autosave ) );
+		if ( props.settings.autosave ) {
+			this.store.dispatch( showAutosaveNotice( props.settings.autosave ) );
 		}
 	}
 

@@ -891,17 +891,6 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 	), $meta_box_url );
 	wp_localize_script( 'wp-editor', '_wpMetaBoxUrl', $meta_box_url );
 
-	$post_autosave = get_autosave_newer_than_post_save( $post );
-
-	if ( $post_autosave ) {
-		wp_localize_script(
-			'wp-editor',
-			'_wpAutosave',
-			array(
-				'editLink' => add_query_arg( 'gutenberg', true, get_edit_post_link( $post_autosave->ID ) ),
-			)
-		);
-	}
 	// Populate default code editor settings by short-circuiting wp_enqueue_code_editor.
 	global $gutenberg_captured_code_editor_settings;
 	add_filter( 'wp_code_editor_settings', 'gutenberg_capture_code_editor_settings' );
@@ -948,6 +937,13 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 		'disablePostFormats'  => ! current_theme_supports( 'post-formats' ),
 		'titlePlaceholder'    => apply_filters( 'enter_title_here', __( 'Add title', 'gutenberg' ), $post ),
 	);
+
+	$post_autosave = get_autosave_newer_than_post_save( $post );
+	if ( $post_autosave ) {
+		$editor_settings['autosave'] = array(
+				'editLink' => add_query_arg( 'gutenberg', true, get_edit_post_link( $post_autosave->ID ) ),
+		);
+	}
 
 	if ( ! empty( $color_palette ) ) {
 		$editor_settings['colors'] = $color_palette;
