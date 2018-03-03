@@ -891,14 +891,14 @@ function gutenberg_editor_scripts_and_styles( $hook ) {
 	), $meta_box_url );
 	wp_localize_script( 'wp-editor', '_wpMetaBoxUrl', $meta_box_url );
 
-	$show_autosave = get_autosave_newer_than_post_save( $post );
+	$post_autosave = get_autosave_newer_than_post_save( $post );
 
-	if ( $show_autosave ) {
+	if ( $post_autosave ) {
 		wp_localize_script(
 			'wp-editor',
 			'_wpAutosave',
 			array(
-				'editLink' => add_query_arg( 'gutenberg', true, get_edit_post_link( $autosave->ID ) ),
+				'editLink' => add_query_arg( 'gutenberg', true, get_edit_post_link( $post_autosave->ID ) ),
 			)
 		);
 	}
