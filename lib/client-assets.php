@@ -756,7 +756,6 @@ $gutenberg_captured_code_editor_settings = false;
 function gutenberg_capture_code_editor_settings( $settings ) {
 	global $gutenberg_captured_code_editor_settings;
 	$gutenberg_captured_code_editor_settings = $settings;
-
 	return false;
 }
 /**
