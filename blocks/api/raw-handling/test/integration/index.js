@@ -13,14 +13,16 @@ import rawHandler from '../../index';
 import serialize from '../../../serializer';
 
 const types = [
-	'plain',
+	'anchor-image',
 	'apple',
+	'evernote',
+	'figure-anchor',
 	'google-docs',
+	'iframe-embed',
 	'ms-word',
 	'ms-word-online',
-	'evernote',
-	'iframe-embed',
 	'one-image',
+	'plain',
 	'two-images',
 ];
 
