@@ -24,14 +24,14 @@ import { selectBlock } from '../../store/actions';
  * Module constants
  */
 const upArrow = (
-	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden role="img" focusable="false">
-		<path d="M12.293 12.207L9 8.914l-3.293 3.293-1.414-1.414L9 6.086l4.707 4.707z" />
+	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden role="img" focusable="false">
+		<path d="M3 11.2l6-6 6 6-1.1 1.1L9 7.4l-4.9 4.9" />
 	</svg>
 );
 
 const downArrow = (
-	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" aria-hidden role="img" focusable="false">
-		<path d="M12.293 6.086L9 9.379 5.707 6.086 4.293 7.5 9 12.207 13.707 7.5z" />
+	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden role="img" focusable="false">
+		<path d="M15 6.8l-6 6-6-6 1.1-1.1L9 10.6l4.9-4.9" />
 	</svg>
 );
 
