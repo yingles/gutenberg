@@ -31,29 +31,23 @@ const HOSTS_NO_PREVIEWS = [ 'facebook.com' ];
 const wpEmbedAPI = memoize( ( url ) => wp.apiRequest( { path: `/oembed/1.0/proxy?${ stringify( { url } ) }` } ) );
 
 const matchesPatterns = ( url, patterns ) => {
-	for ( const patternIndex in patterns ) {
-		const pattern = new RegExp( '^https?:\/\/' + patterns[ patternIndex ] + '$', 'i' );
-		if ( url.match( pattern ) ) {
-			return true;
-		}
-	}
-	return false;
+	return patterns.some( ( pattern ) => {
+		return url.match( new RegExp( pattern, 'i' ) );
+	} );
 };
 
 const findBlock = ( url ) => {
-	const findMatch = ( blocks ) => {
-		for ( const blockIndex in blocks ) {
-			const blockSettings = blocks[ blockIndex ];
-			if ( matchesPatterns( url, blockSettings.settings.patterns ) ) {
-				return blockSettings.name;
-			}
+	const blocks = [ ...common, ...others ];
+	for ( let i = 0; i < blocks.length; i++ ) {
+		const blockSettings = blocks[ i ];
+		if ( matchesPatterns( url, blockSettings.settings.patterns ) ) {
+			return blockSettings.name;
 		}
-		return 'core/embed';
-	};
-	return findMatch( [ ...common, ...others ] );
+	}
+	return 'core/embed';
 };
 
-function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, keywords = [], providerName = '', patterns = [] } ) {
+function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, keywords = [], patterns = [] } ) {
 	return {
 		title,
 
@@ -64,8 +58,6 @@ function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, k
 		category,
 
 		keywords,
-
-		providerName,
 
 		patterns,
 
@@ -164,10 +156,12 @@ function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, k
 							}
 							// Some plugins put the embed html in `result`, so get the right one here.
 							const html = obj.html ? obj.html : obj.result;
-							// Block titles are the provider names, but we can override with `providerName` too.
-							const providerNameSlug = kebabCase( toLower( '' !== providerName ? providerName : title ) );
+							// Some plugins only return HTML with no type info, so default this to 'rich'.
 							let { type = 'rich' } = obj;
-
+							// If we got a provider name from the API, use it for the slug, otherwise we use the title,
+							// because not all embed code gives us a provider name.
+							const { provider_name: providerName } = obj;
+							const providerNameSlug = kebabCase( toLower( '' !== providerName ? providerName : title ) );
 							if ( includes( html, 'class="wp-embedded-content" data-secret' ) ) {
 								type = 'wp-embed';
 								// If this is not the WordPress embed block, transform it into one, there's
@@ -338,7 +332,7 @@ export const common = [
 			title: 'Twitter',
 			icon: 'embed-post',
 			keywords: [ __( 'tweet' ) ],
-			patterns: [ '(www\.)?twitter\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?twitter\.com\/.+' ],
 		} ),
 	},
 	{
@@ -347,7 +341,7 @@ export const common = [
 			title: 'YouTube',
 			icon: 'embed-video',
 			keywords: [ __( 'music' ), __( 'video' ) ],
-			patterns: [ '((m|www)\.)?youtube\.com\/.+', 'youtu\.be\/.+' ],
+			patterns: [ '^https?:\/\/((m|www)\.)?youtube\.com\/.+', 'youtu\.be\/.+' ],
 		} ),
 	},
 	{
@@ -355,7 +349,7 @@ export const common = [
 		settings: getEmbedBlockSettings( {
 			title: 'Facebook',
 			icon: 'embed-post',
-			patterns: [ 'www\.facebook.com\/.+' ],
+			patterns: [ '^https?:\/\/www\.facebook.com\/.+' ],
 		} ),
 	},
 	{
@@ -364,7 +358,7 @@ export const common = [
 			title: 'Instagram',
 			icon: 'embed-photo',
 			keywords: [ __( 'image' ) ],
-			patterns: [ '(www\.)?instagr(\.am|am\.com)/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?instagr(\.am|am\.com)/.+' ],
 		} ),
 	},
 	{
@@ -381,7 +375,7 @@ export const common = [
 			title: 'SoundCloud',
 			icon: 'embed-audio',
 			keywords: [ __( 'music' ), __( 'audio' ) ],
-			patterns: [ '(www\.)?soundcloud\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?soundcloud\.com\/.+' ],
 		} ),
 	},
 	{
@@ -390,7 +384,7 @@ export const common = [
 			title: 'Spotify',
 			icon: 'embed-audio',
 			keywords: [ __( 'music' ), __( 'audio' ) ],
-			patterns: [ '(open|play)\.spotify\.com\/.+' ],
+			patterns: [ '^https?:\/\/(open|play)\.spotify\.com\/.+' ],
 		} ),
 	},
 	{
@@ -399,7 +393,7 @@ export const common = [
 			title: 'Flickr',
 			icon: 'embed-photo',
 			keywords: [ __( 'image' ) ],
-			patterns: [ '(www\.)?flickr\.com\/.+', 'flic\.kr/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?flickr\.com\/.+', 'flic\.kr/.+' ],
 		} ),
 	},
 	{
@@ -408,7 +402,7 @@ export const common = [
 			title: 'Vimeo',
 			icon: 'embed-video',
 			keywords: [ __( 'video' ) ],
-			patterns: [ '(www\.)?vimeo\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?vimeo\.com\/.+' ],
 		} ),
 	},
 ];
@@ -419,7 +413,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Animoto',
 			icon: 'embed-video',
-			patterns: [ '(www\.)?(animoto|video214)\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?(animoto|video214)\.com\/.+' ],
 		} ),
 	},
 	{
@@ -427,7 +421,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Cloudup',
 			icon: 'embed-post',
-			patterns: [ 'cloudup\.com\/.+' ],
+			patterns: [ '^https?:\/\/cloudup\.com\/.+' ],
 		} ),
 	},
 	{
@@ -435,7 +429,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'CollegeHumor',
 			icon: 'embed-video',
-			patterns: [ '(www\.)?collegehumor\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?collegehumor\.com\/.+' ],
 		} ),
 	},
 	{
@@ -443,7 +437,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Dailymotion',
 			icon: 'embed-video',
-			patterns: [ '(www\.)?dailymotion\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?dailymotion\.com\/.+' ],
 		} ),
 	},
 	{
@@ -459,7 +453,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Hulu',
 			icon: 'embed-video',
-			patterns: [ '(www\.)?hulu\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?hulu\.com\/.+' ],
 		} ),
 	},
 	{
@@ -467,7 +461,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Imgur',
 			icon: 'embed-photo',
-			patterns: [ '(.+\.)?imgur\.com\/.+' ],
+			patterns: [ '^https?:\/\/(.+\.)?imgur\.com\/.+' ],
 		} ),
 	},
 	{
@@ -475,7 +469,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Issuu',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?issuu\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?issuu\.com\/.+' ],
 		} ),
 	},
 	{
@@ -483,7 +477,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Kickstarter',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?kickstarter\.com\/.+', 'kck\.st/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?kickstarter\.com\/.+', '^https?:\/\/kck\.st/.+' ],
 		} ),
 	},
 	{
@@ -491,7 +485,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Meetup.com',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?meetu(\.ps|p\.com)\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?meetu(\.ps|p\.com)\/.+' ],
 		} ),
 	},
 	{
@@ -500,7 +494,7 @@ export const others = [
 			title: 'Mixcloud',
 			icon: 'embed-audio',
 			keywords: [ __( 'music' ), __( 'audio' ) ],
-			patterns: [ '(www\.)?mixcloud\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?mixcloud\.com\/.+' ],
 		} ),
 	},
 	{
@@ -508,7 +502,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Photobucket',
 			icon: 'embed-photo',
-			patterns: [ 'g?i*\.photobucket\.com\/.+' ],
+			patterns: [ '^http:\/\/g?i*\.photobucket\.com\/.+' ],
 		} ),
 	},
 	{
@@ -516,7 +510,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Polldaddy',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?mixcloud\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?mixcloud\.com\/.+' ],
 		} ),
 	},
 	{
@@ -524,7 +518,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Reddit',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?reddit\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?reddit\.com\/.+' ],
 		} ),
 	},
 	{
@@ -532,7 +526,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'ReverbNation',
 			icon: 'embed-audio',
-			patterns: [ '(www\.)?reverbnation\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?reverbnation\.com\/.+' ],
 		} ),
 	},
 	{
@@ -540,7 +534,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Screencast',
 			icon: 'embed-video',
-			patterns: [ '(www\.)?screencast\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?screencast\.com\/.+' ],
 		} ),
 	},
 	{
@@ -548,7 +542,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Scribd',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?scribd\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?scribd\.com\/.+' ],
 		} ),
 	},
 	{
@@ -556,7 +550,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Slideshare',
 			icon: 'embed-post',
-			patterns: [ '(.+?\.)?slideshare\.net\/.+' ],
+			patterns: [ '^https?:\/\/(.+?\.)?slideshare\.net\/.+' ],
 		} ),
 	},
 	{
@@ -564,7 +558,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'SmugMug',
 			icon: 'embed-photo',
-			patterns: [ '(www\.)?smugmug\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?smugmug\.com\/.+' ],
 		} ),
 	},
 	{
@@ -572,7 +566,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Speaker',
 			icon: 'embed-audio',
-			patterns: [ '(www\.)?speakerdeck\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?speakerdeck\.com\/.+' ],
 		} ),
 	},
 	{
@@ -580,7 +574,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'TED',
 			icon: 'embed-video',
-			patterns: [ '(www\.|embed\.)?ted\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.|embed\.)?ted\.com\/.+' ],
 		} ),
 	},
 	{
@@ -588,7 +582,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'Tumblr',
 			icon: 'embed-post',
-			patterns: [ '(www\.)?tumblr\.com\/.+' ],
+			patterns: [ '^https?:\/\/(www\.)?tumblr\.com\/.+' ],
 		} ),
 	},
 	{
@@ -597,7 +591,7 @@ export const others = [
 			title: 'VideoPress',
 			icon: 'embed-video',
 			keywords: [ __( 'video' ) ],
-			patterns: [ 'videopress\.com\/.+' ],
+			patterns: [ '^https?:\/\/videopress\.com\/.+' ],
 		} ),
 	},
 	{
@@ -605,7 +599,7 @@ export const others = [
 		settings: getEmbedBlockSettings( {
 			title: 'WordPress.tv',
 			icon: 'embed-video',
-			patterns: [ 'wordpress\.tv\/.+' ],
+			patterns: [ '^https?:\/\/wordpress\.tv\/.+' ],
 		} ),
 	},
 ];
