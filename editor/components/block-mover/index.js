@@ -23,15 +23,17 @@ import { selectBlock } from '../../store/actions';
 /**
  * Module constants
  */
+
+// <polygon points="9,5.1 2.6,11.5 4.1,12.9 9,7.9 13.9,12.9 15.4,11.5 " />
 const upArrow = (
 	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden role="img" focusable="false">
-		<path d="M3 11.2l6-6 6 6-1.1 1.1L9 7.4l-4.9 4.9" />
+		<polygon points="9,4.5 3.3,10.1 4.8,11.5 9,7.3 13.2,11.5 14.7,10.1 " />
 	</svg>
 );
 
 const downArrow = (
 	<svg tabIndex="-1" width="18" height="18" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 18 18" aria-hidden role="img" focusable="false">
-		<path d="M15 6.8l-6 6-6-6 1.1-1.1L9 10.6l4.9-4.9" />
+		<polygon points="9,13.5 14.7,7.9 13.2,6.5 9,10.7 4.8,6.5 3.3,7.9 " />
 	</svg>
 );
 
