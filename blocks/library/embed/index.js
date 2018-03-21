@@ -143,7 +143,7 @@ function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, k
 			render() {
 				const { html, type, error, fetching } = this.state;
 				const { align, url, caption } = this.props.attributes;
-				const { setAttributes, isSelected, className } = this.props;
+				const { setAttributes, isSelected, className, setIsSelected } = this.props;
 				const updateAlignment = ( nextAlign ) => setAttributes( { align: nextAlign } );
 
 				const controls = isSelected && (
@@ -204,6 +204,7 @@ function getEmbedBlockSettings( { title, icon, category = 'embed', transforms, k
 							html={ html }
 							title={ iframeTitle }
 							type={ type }
+							onFocus={ setIsSelected }
 						/>
 					</div>
 				);
