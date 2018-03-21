@@ -1,7 +1,12 @@
 /**
  * WordPress dependencies
  */
-import { Component, renderToString } from '@wordpress/element';
+import { Component, renderToString, findDOMNode } from '@wordpress/element';
+
+/**
+ * Internal dependencies
+ */
+import FocusableIframe from '../focusable-iframe';
 
 export default class Sandbox extends Component {
 	constructor() {
@@ -9,12 +14,25 @@ export default class Sandbox extends Component {
 
 		this.trySandbox = this.trySandbox.bind( this );
 		this.checkMessageForResize = this.checkMessageForResize.bind( this );
-		this.checkFocus = this.checkFocus.bind( this );
+		this.bindNode = this.bindNode.bind( this );
 
 		this.state = {
 			width: 0,
 			height: 0,
 		};
+	}
+
+	componentDidMount() {
+		window.addEventListener( 'message', this.checkMessageForResize, false );
+		this.trySandbox();
+	}
+
+	componentDidUpdate() {
+		this.trySandbox();
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener( 'message', this.checkMessageForResize );
 	}
 
 	isFrameAccessible() {
@@ -51,25 +69,13 @@ export default class Sandbox extends Component {
 		}
 	}
 
-	componentDidMount() {
-		window.addEventListener( 'message', this.checkMessageForResize, false );
-		window.addEventListener( 'blur', this.checkFocus );
-		this.trySandbox();
-	}
+	bindNode( ref ) {
+		// Disable reason: The FocusableIframe ref would assign itself as the
+		// instance of its class. While ideally it's not assume the DOM element
+		// rendered by a component, there's good reason to believe it's iframe.
 
-	componentDidUpdate() {
-		this.trySandbox();
-	}
-
-	componentWillUnmount() {
-		window.removeEventListener( 'message', this.checkMessageForResize );
-		window.removeEventListener( 'blur', this.checkFocus );
-	}
-
-	checkFocus() {
-		if ( this.props.onFocus && document.activeElement === this.iframe ) {
-			this.props.onFocus();
-		}
+		// eslint-disable-next-line react/no-find-dom-node
+		this.iframe = findDOMNode( ref );
 	}
 
 	trySandbox() {
@@ -185,10 +191,17 @@ export default class Sandbox extends Component {
 	}
 
 	render() {
+		const { title, onFocus } = this.props;
+
+		// Use FocusableIframe as rendered element type if rendering parent
+		// seeks focus event handling.
+		const Iframe = onFocus ? FocusableIframe : 'iframe';
+
 		return (
-			<iframe
-				ref={ ( node ) => this.iframe = node }
-				title={ this.props.title }
+			<Iframe
+				ref={ this.bindNode }
+				title={ title }
+				onFocus={ onFocus }
 				scrolling="no"
 				sandbox="allow-scripts allow-same-origin allow-presentation"
 				onLoad={ this.trySandbox }
