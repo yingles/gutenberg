@@ -26,7 +26,7 @@ describe( 'Adding blocks', () => {
 		// Using the between inserter
 		cy.document().trigger( 'mousemove', { clientX: 200, clientY: 300 } );
 		cy.document().trigger( 'mousemove', { clientX: 250, clientY: 350 } );
-		cy.get( '[data-type="core/paragraph"] .editor-block-list__insertion-point-inserter' ).click();
+		cy.get( '[data-type="core/code"] .editor-block-list__insertion-point-inserter' ).click();
 		cy.focused().type( 'Second paragraph' );
 
 		// Switch to Text Mode to check HTML Output
