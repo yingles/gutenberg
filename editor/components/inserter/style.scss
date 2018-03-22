@@ -44,7 +44,7 @@ input[type="search"].editor-inserter__search {
 	}
 
 	&:focus {
-		@include square-style__focus-active;
+		@include square-style__focus;
 	}
 }
 
@@ -153,7 +153,7 @@ input[type="search"].editor-inserter__search {
 		@include square-style__neutral();
 
 		&:focus {
-			@include square-style__focus-active()
+			@include square-style__focus()
 		}
 
 		&:focus:active {
@@ -201,6 +201,6 @@ input[type="search"].editor-inserter__search {
 	&:active,
 	&:focus {
 		z-index: z-index( '.editor-inserter__tab.is-active' );
-		@include square-style__focus-active();
+		@include square-style__focus();
 	}
 }

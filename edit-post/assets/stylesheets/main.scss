@@ -123,18 +123,18 @@ body.gutenberg-editor-page {
 	}
 }
 
+.edit-post-sidebar,
 .editor-block-list__block {
 	.regular-text, // this is the upstream WordPress base input class, we override to unify the colors with the new grays pending https://core.trac.wordpress.org/ticket/40633
-	input,
 	textarea {
 		border: 1px solid $light-gray-700;
 		font-family: $default-font;
 		font-size: $default-font-size;
 		padding: 6px 10px;
-		@include square-style__neutral();
+		@include input-style__neutral();
 
 		&:focus {
-			@include square-style__focus-active();
+			@include input-style__focus();
 		}
 	}
 }

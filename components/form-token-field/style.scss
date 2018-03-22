@@ -7,7 +7,7 @@
 	color: $dark-gray-700;
 	cursor: text;
 
-	@include square-style__neutral();
+	@include input-style__neutral();
 
 	&.is-disabled {
 		background: $light-gray-500;
@@ -15,7 +15,7 @@
 	}
 
 	&.is-active {
-		@include square-style__focus-active();
+		@include input-style__focus();
 	}
 }
 
@@ -40,8 +40,10 @@ input[type="text"].components-form-token-field__input {
 	color: $dark-gray-800;
 	box-shadow: none;
 
+	&:focus,
 	.components-form-token-field.is-active & {
 		outline: none;
+		box-shadow: none;
 	}
 }
 
