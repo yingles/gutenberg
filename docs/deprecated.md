@@ -2,6 +2,7 @@ Gutenberg's deprecation policy is intended to support backwards-compatibility fo
 
 ## 2.6.0
 - `wp.blocks.getBlockDefaultClassname` function removed. Please use `wp.blocks.getBlockDefaultClassName` instead.
+- `wp.element.getWrapperDisplayName` function removed. Please use `wp.element.createHigherOrderComponent` instead.
 
 ## 2.5.0
 
