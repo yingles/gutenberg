@@ -73,6 +73,7 @@ class ButtonBlock extends Component {
 			clear,
 		} = attributes;
 
+		/* The disabling of autofocus, the input is being focused when you tab to the button block. */
 		/* eslint-disable jsx-a11y/no-autofocus */
 		return [
 			isSelected && (
