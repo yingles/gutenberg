@@ -38,6 +38,7 @@ input[type="text"].components-form-token-field__input {
 	border: 0;
 	font-size: $default-font-size;
 	color: $dark-gray-800;
+	box-shadow: none;
 
 	.components-form-token-field.is-active & {
 		outline: none;
