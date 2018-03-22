@@ -75,8 +75,23 @@ class WritingFlow extends Component {
 		this.bindAppender = this.bindAppender.bind( this );
 		this.clearVerticalRect = this.clearVerticalRect.bind( this );
 		this.focusLastTextField = this.focusLastTextField.bind( this );
+		this.swithToEditMode = this.swithToEditMode.bind( this );
 
 		this.verticalRect = null;
+	}
+
+	componentDidMount() {
+		window.addEventListener( 'mousemove', this.swithToEditMode );
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener( 'mousemove', this.swithToEditMode );
+	}
+
+	swithToEditMode() {
+		if ( this.props.keyboardMode !== 'edit' ) {
+			this.props.setKeyboardMode( 'edit' );
+		}
 	}
 
 	bindContainer( ref ) {

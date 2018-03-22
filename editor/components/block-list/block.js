@@ -439,6 +439,7 @@ export class BlockListBlock extends Component {
 			isFirstMultiSelected,
 			isLastInSelection,
 			isTypingWithinBlock,
+			keyboardMode,
 		} = this.props;
 		const isHovered = this.state.isHovered && ! this.props.isMultiSelecting;
 		const { name: blockName, isValid } = block;
@@ -450,14 +451,15 @@ export class BlockListBlock extends Component {
 
 		// If the block is selected and we're typing the block should not appear.
 		// Empty paragraph blocks should always show up as unselected.
+		const isKeybboardMode = keyboardMode === 'edit';
 		const isEmptyDefaultBlock = isUnmodifiedDefaultBlock( block );
 		const isSelectedNotTyping = isSelected && ! isTypingWithinBlock;
 		const showSideInserter = ( isSelected || isHovered ) && isEmptyDefaultBlock;
 		const shouldAppearSelected = ! showSideInserter && isSelectedNotTyping;
-		const shouldShowMovers = ( shouldAppearSelected || isHovered || ( isEmptyDefaultBlock && isSelectedNotTyping ) ) && ! showSideInserter;
+		const shouldShowMovers = isKeybboardMode && ( shouldAppearSelected || isHovered || ( isEmptyDefaultBlock && isSelectedNotTyping ) ) && ! showSideInserter;
 		const shouldShowSettingsMenu = shouldShowMovers;
-		const shouldShowContextualToolbar = shouldAppearSelected && isValid && showContextualToolbar;
-		const shouldShowMobileToolbar = shouldAppearSelected;
+		const shouldShowContextualToolbar = isKeybboardMode && shouldAppearSelected && isValid && showContextualToolbar;
+		const shouldShowMobileToolbar = isKeybboardMode && shouldAppearSelected;
 		const { error } = this.state;
 
 		// Insertion point can only be made visible when the side inserter is
