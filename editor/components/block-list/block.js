@@ -511,6 +511,8 @@ export class BlockListBlock extends Component {
 				onClick={ this.onClick }
 				onKeyDown={ this.onKeyDown }
 				tabIndex="0"
+				aria-label={ blockLabel }
+				role="group"
 				childHandledEvents={ [
 					'onDragStart',
 					'onMouseDown',
@@ -545,7 +547,6 @@ export class BlockListBlock extends Component {
 					onDragStart={ this.preventDrag }
 					onMouseDown={ this.onPointerDown }
 					className="editor-block-list__block-edit"
-					aria-label={ blockLabel }
 					data-block={ block.uid }
 				>
 					<BlockCrashBoundary onError={ this.onBlockError }>
