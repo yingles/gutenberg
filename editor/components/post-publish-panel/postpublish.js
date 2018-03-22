@@ -2,19 +2,14 @@
  * External Dependencies
  */
 import { get } from 'lodash';
-import { connect } from 'react-redux';
 
 /**
  * WordPress Dependencies
  */
-import { PanelBody, Button, ClipboardButton, withAPIData } from '@wordpress/components';
+import { PanelBody, Button, ClipboardButton } from '@wordpress/components';
 import { __ } from '@wordpress/i18n';
-import { Component, compose } from '@wordpress/element';
-
-/**
- * Internal Dependencies
- */
-import { getCurrentPost, getCurrentPostType } from '../../store/selectors';
+import { Component } from '@wordpress/element';
+import { withSelect } from '@wordpress/data';
 
 class PostPublishPanelPostpublish extends Component {
 	constructor() {
@@ -49,7 +44,7 @@ class PostPublishPanelPostpublish extends Component {
 
 	render() {
 		const { post, postType } = this.props;
-		const viewPostLabel = get( postType, [ 'data', 'labels', 'view_item' ] );
+		const viewPostLabel = get( postType, [ 'labels', 'view_item' ] );
 
 		return (
 			<div className="post-publish-panel__postpublish">
@@ -79,24 +74,12 @@ class PostPublishPanelPostpublish extends Component {
 	}
 }
 
-const applyConnect = connect(
-	( state ) => {
-		return {
-			post: getCurrentPost( state ),
-			postTypeSlug: getCurrentPostType( state ),
-		};
-	}
-);
-
-const applyWithAPIData = withAPIData( ( props ) => {
-	const { postTypeSlug } = props;
+export default withSelect( ( select ) => {
+	const { getEditedPostAttribute, getCurrentPost } = select( 'core/editor' );
+	const { getPostType } = select( 'core' );
 
 	return {
-		postType: `/wp/v2/types/${ postTypeSlug }?context=edit`,
+		post: getCurrentPost(),
+		postType: getPostType( getEditedPostAttribute( 'type' ) ),
 	};
-} );
-
-export default compose( [
-	applyConnect,
-	applyWithAPIData,
-] )( PostPublishPanelPostpublish );
+} )( PostPublishPanelPostpublish );
