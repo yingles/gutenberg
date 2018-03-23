@@ -35,6 +35,8 @@ const {
 	isEditedPostSaveable,
 	isEditedPostEmpty,
 	isEditedPostBeingScheduled,
+	isEditedPostPending,
+	isEditedPostScheduled,
 	getEditedPostPreviewLink,
 	getBlockDependantsCacheBust,
 	getBlock,
@@ -626,6 +628,97 @@ describe( 'selectors', () => {
 			};
 
 			expect( isCurrentPostPublished( state ) ).toBe( true );
+		} );
+	} );
+
+	describe( 'isEditedPostScheduled', () => {
+		it( 'should return true for posts with status future', () => {
+			const state = {
+				currentPost: {
+					status: 'future',
+				},
+			};
+
+			expect( isEditedPostScheduled( state ) ).toBe( true );
+		} );
+
+		it( 'should return true for old scheduled posts', () => {
+			const state = {
+				currentPost: {
+					status: 'future',
+					date: '2016-05-30T17:21:39',
+				},
+			};
+
+			expect( isCurrentPostPublished( state ) ).toBe( true );
+		} );
+
+		it( 'should return false for draft posts', () => {
+			const state = {
+				currentPost: {
+					status: 'draft',
+				},
+			};
+
+			expect( isEditedPostScheduled( state ) ).toBe( false );
+		} );
+
+		it( 'should return false for auto draft posts', () => {
+			const state = {
+				currentPost: {
+					status: 'auto-draft',
+				},
+			};
+
+			expect( isEditedPostScheduled( state ) ).toBe( false );
+		} );
+
+		it( 'should return false if status is unknown', () => {
+			const state = {
+				currentPost: {},
+			};
+
+			expect( isEditedPostScheduled( state ) ).toBe( false );
+		} );
+	} );
+
+	describe( 'isEditedPostPending', () => {
+		it( 'should return true for posts in pending state', () => {
+			const state = {
+				currentPost: {
+					status: 'pending',
+				},
+			};
+
+			expect( isEditedPostPending( state ) ).toBe( true );
+		} );
+
+		it( 'should return false for draft posts', () => {
+			const state = {
+				currentPost: {
+					status: 'draft',
+				},
+			};
+
+			expect( isEditedPostPending( state ) ).toBe( false );
+		} );
+
+		it( 'should return false for auto draft posts', () => {
+			const state = {
+				currentPost: {
+					status: 'auto-draft',
+				},
+			};
+
+			expect( isEditedPostPending( state ) ).toBe( false );
+		} );
+
+		it( 'should return false if status is unknown', () => {
+			const state = {
+				currentPost: {},
+			};
+
+			expect( isEditedPostPending( state ) ).toBe( false );
 		} );
 	} );
 

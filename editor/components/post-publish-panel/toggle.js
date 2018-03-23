@@ -21,6 +21,8 @@ import {
 	isEditedPostPublishable,
 	isCurrentPostPublished,
 	isEditedPostBeingScheduled,
+	isEditedPostPending,
+	isEditedPostScheduled,
 	getCurrentPostType,
 } from '../../store/selectors';
 
@@ -31,6 +33,8 @@ function PostPublishPanelToggle( {
 	isSaveable,
 	isPublished,
 	isBeingScheduled,
+	isPending,
+	isScheduled,
 	onToggle,
 	isOpen,
 	forceIsDirty,
@@ -42,7 +46,7 @@ function PostPublishPanelToggle( {
 
 	const userCanPublishPosts = get( user.data, [ 'post_type_capabilities', 'publish_posts' ], false );
 	const isContributor = user.data && ! userCanPublishPosts;
-	const showToggle = ! isContributor && ! isPublished && ! isBeingScheduled;
+	const showToggle = ! isPublished && ! ( isScheduled && isBeingScheduled ) && ! ( isPending && isContributor );
 
 	if ( ! showToggle ) {
 		return <PostPublishButton forceIsDirty={ forceIsDirty } forceIsSaving={ forceIsSaving } />;
@@ -57,7 +61,7 @@ function PostPublishPanelToggle( {
 			disabled={ ! isButtonEnabled }
 			isBusy={ isSaving && isPublished }
 		>
-			{ __( 'Publish...' ) }
+			{ isBeingScheduled ? __( 'Schedule...' ) : __( 'Publish...' ) }
 		</Button>
 	);
 }
@@ -68,6 +72,8 @@ const applyConnect = connect(
 		isSaveable: isEditedPostSaveable( state ),
 		isPublishable: isEditedPostPublishable( state ),
 		isPublished: isCurrentPostPublished( state ),
+		isScheduled: isEditedPostScheduled( state ),
+		isPending: isEditedPostPending( state ),
 		isBeingScheduled: isEditedPostBeingScheduled( state ),
 		postType: getCurrentPostType( state ),
 	} ),

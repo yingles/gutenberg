@@ -89,6 +89,28 @@ export function isEditedPostDirty( state ) {
 }
 
 /**
+ * Returns true if post is pending review.
+ *
+ * @param {Object} state Global application state.
+ *
+ * @return {boolean} Whether unsaved values exist.
+ */
+export function isEditedPostPending( state ) {
+	return getCurrentPost( state ).status === 'pending';
+}
+
+/**
+ * Returns true if post is already scheduled.
+ *
+ * @param {Object} state Global application state.
+ *
+ * @return {boolean} Whether unsaved values exist.
+ */
+export function isEditedPostScheduled( state ) {
+	return getCurrentPost( state ).status === 'future';
+}
+
+/**
  * Returns true if there are no unsaved values for the current edit session and if
  * the currently edited post is new (and has never been saved before).
  *

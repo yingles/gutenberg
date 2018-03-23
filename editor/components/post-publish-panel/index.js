@@ -21,6 +21,7 @@ import PostPublishPanelPostpublish from './postpublish';
 import {
 	getCurrentPostType,
 	isCurrentPostPublished,
+	isEditedPostBeingScheduled,
 	isSavingPost,
 	isEditedPostDirty,
 } from '../../store/selectors';
@@ -28,7 +29,7 @@ import {
 class PostPublishPanel extends Component {
 	constructor() {
 		super( ...arguments );
-		this.onPublish = this.onPublish.bind( this );
+		this.onSubmit = this.onSubmit.bind( this );
 		this.state = {
 			loading: false,
 			published: false,
@@ -56,21 +57,26 @@ class PostPublishPanel extends Component {
 		}
 	}
 
-	onPublish() {
+	onSubmit() {
+		const { isBeingScheduled, user, onClose } = this.props;
+		const userCanPublishPosts = get( user.data, [ 'post_type_capabilities', 'publish_posts' ], false );
+		const isContributor = user.data && ! userCanPublishPosts;
+		if ( isBeingScheduled || isContributor ) {
+			onClose();
+			return;
+		}
 		this.setState( { loading: true } );
 	}
 
 	render() {
-		const { onClose, user, forceIsDirty, forceIsSaving } = this.props;
+		const { onClose, forceIsDirty, forceIsSaving } = this.props;
 		const { loading, published } = this.state;
-		const canPublish = get( user.data, [ 'post_type_capabilities', 'publish_posts' ], false );
-
 		return (
 			<div className="editor-post-publish-panel">
 				<div className="editor-post-publish-panel__header">
 					{ ! published && (
 						<div className="editor-post-publish-panel__header-publish-button">
-							<PostPublishButton onSubmit={ this.onPublish } forceIsDirty={ forceIsDirty } forceIsSaving={ forceIsSaving } />
+							<PostPublishButton onSubmit={ this.onSubmit } forceIsDirty={ forceIsDirty } forceIsSaving={ forceIsSaving } />
 						</div>
 					) }
 					{ published && (
@@ -83,7 +89,7 @@ class PostPublishPanel extends Component {
 					/>
 				</div>
 				<div className="editor-post-publish-panel__content">
-					{ canPublish && ! loading && ! published && <PostPublishPanelPrepublish /> }
+					{ ! loading && ! published && <PostPublishPanelPrepublish /> }
 					{ loading && ! published && <Spinner /> }
 					{ published && <PostPublishPanelPostpublish /> }
 				</div>
@@ -96,6 +102,7 @@ const applyConnect = connect(
 	( state ) => {
 		return {
 			postType: getCurrentPostType( state ),
+			isBeingScheduled: isEditedPostBeingScheduled( state ),
 			isPublished: isCurrentPostPublished( state ),
 			isSaving: isSavingPost( state ),
 			isDirty: isEditedPostDirty( state ),
