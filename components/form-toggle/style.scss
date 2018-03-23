@@ -13,13 +13,16 @@ $toggle-border-width: 2px;
 	}
 
 	.components-form-toggle__off {
-		fill: $dark-gray-300;
+		color: $dark-gray-300;
+		fill: currentColor;
 		right: $toggle-border-width * 3;
 	}
 
 	.components-form-toggle__on {
 		left: $toggle-border-width * 3 + 2px; // indent 2px extra because icon is thinner
 		filter: invert( 100% ) contrast( 500% ); // this makes the icon white, and it makes it dark blue in Windows High Contrast Mode
+		outline: 1px solid transparent; // this makes the dark blue all black in Windows High Contrast Mode
+		outline-offset: -1px;
 	}
 
 	// unchecked state
@@ -46,7 +49,7 @@ $toggle-border-width: 2px;
 		border-radius: 50%;
 		transition: 0.1s transform ease;
 		background-color: $dark-gray-300;
-		border: 2px solid $dark-gray-300; // has to have an explicit border for Windows High Contrast Mode
+		border: 5px solid $dark-gray-300; // has explicit border to act as a fill in Windows High Contrast Mode
 	}
 
 	&:hover {
@@ -56,11 +59,11 @@ $toggle-border-width: 2px;
 
 		.components-form-toggle__thumb {
 			background-color: $dark-gray-500;
-			border: 2px solid $dark-gray-500;
+			border: 5px solid $dark-gray-300; // has explicit border to act as a fill in Windows High Contrast Mode
 		}
 
 		.components-form-toggle__off {
-			fill: $dark-gray-500;
+			color: $dark-gray-500;
 		}
 	}
 
